@@ -1,86 +1,96 @@
 import org.jxmapviewer.*;
 import org.jxmapviewer.viewer.*;
-import org.jxmapviewer.painter.*;
 import javax.swing.*;
 import java.util.*;
-import org.jxmapviewer.input.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.security.CodeSource;
 
 public class Map extends JPanel {
 
     private JXMapViewer mapViewer;
-    private Set<Waypoint> allWaypoints; // Store all crime and route points
+    private Set<Waypoint> allWaypoints;
     private GraphPainter graphPainter;
-    private boolean doPlaceMarker = false; // Flag to check if the user can click on the map
-    private boolean doFindRoute = false;    
-    
+    private boolean doPlaceMarker = false;
+    private boolean doFindRoute   = false;
+
+    private Runnable onMapClickComplete; // called after user picks a point (or cancels)
+
     public Map() {
         setLayout(new BorderLayout());
 
         mapViewer = new JXMapViewer();
 
-        // Set up the tile factory for OpenStreetMap
         TileFactoryInfo info = new TileFactoryInfo(
-    1, 15, 17,
-    256, true, true,
-    "https://a.tiles.openrailwaymap.org/standard",
-    "x", "y", "z") {
-        @Override
-        public String getTileUrl(int x, int y, int zoom) {
-            int z = 17 - zoom;
-            return "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/" + z + "/" + y + "/" + x;
-        }
-    };
+            1, 15, 17, 256, true, true,
+            "https://a.tiles.openrailwaymap.org/standard", "x", "y", "z") {
+            @Override
+            public String getTileUrl(int x, int y, int zoom) {
+                int z = 17 - zoom;
+                return "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/" + z + "/" + y + "/" + x;
+            }
+        };
 
-        DefaultTileFactory tileFactory = new DefaultTileFactory(info);
-        mapViewer.setTileFactory(tileFactory);
-
-        // Set a default address location (London)
-        GeoPosition london = new GeoPosition(51.513447, -0.089056);
-        mapViewer.setAddressLocation(london);
+        mapViewer.setTileFactory(new DefaultTileFactory(info));
+        mapViewer.setAddressLocation(new GeoPosition(51.513447, -0.089056));
         mapViewer.setZoom(2);
 
-        graphPainter = new GraphPainter(mapViewer); 
-
-        // graphPainter.setDoPlotCrime(false);
+        graphPainter = new GraphPainter(mapViewer);
         graphPainter.setCrimeWaypoints();
         graphPainter.paintWaypoints();
 
-        add(mapViewer, BorderLayout.CENTER); // Add map viewer to panel
+        add(mapViewer, BorderLayout.CENTER);
 
-        // Add mouse listener for capturing clicks
         mapViewer.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (doPlaceMarker) {
-                    // Get the latitude and longitude of the clicked point
-                    Point2D clickPoint = e.getPoint();
-                    GeoPosition clickedPosition = mapViewer.convertPointToGeoPosition(clickPoint);
+                if (!doPlaceMarker) return;
 
-                    double latitude = clickedPosition.getLatitude();
-                    double longitude = clickedPosition.getLongitude();
+                Point2D clickPoint = e.getPoint();
+                GeoPosition pos = mapViewer.convertPointToGeoPosition(clickPoint);
+                double lat = pos.getLatitude();
+                double lon = pos.getLongitude();
 
-                    Crime crime = new Crime(latitude, longitude, "reported");
-                    graphPainter.reportCrime(crime);
-                    if (doFindRoute) {
-                        routeToCrime(latitude, longitude);
+                Frame owner = (Frame) SwingUtilities.getWindowAncestor(Map.this);
+
+                if (doFindRoute) {
+                    RequestAssistanceDialog dialog = new RequestAssistanceDialog(owner);
+                    dialog.setVisible(true);
+
+                    if (dialog.isSubmitted()) {
+                        // Only add marker if user submitted
+                        Crime marker = new Crime(lat, lon, "assistance");
+                        graphPainter.reportCrime(marker);
+                        graphPainter.paintWaypoints();
+
+                        routeToCrime(lat, lon);
+                        graphPainter.paintWaypoints();
                     }
-                    graphPainter.paintWaypoints();
-                    
-
-                    // Disable further clicks on the map until the "Report Crime" button is pressed again
-                    doPlaceMarker = false;
-                    doFindRoute = false;
+                    // else: cancelled — do nothing, no marker added
                 } else {
-                    // Inform the user to click the "Report Crime" button first
-                    System.out.println("Please click the 'Report Crime' button first.");
+                    CrimeReportDialog dialog = new CrimeReportDialog(owner);
+                    dialog.setVisible(true);
+
+                    String crimeType = dialog.getCrimeType();
+                    if (crimeType != null) {
+                        Crime crime = new Crime(lat, lon, crimeType);
+                        graphPainter.reportCrime(crime);
+                        graphPainter.paintWaypoints();
+                    }
                 }
+
+                doPlaceMarker = false;
+                doFindRoute   = false;
+
+                if (onMapClickComplete != null) onMapClickComplete.run();
             }
         });
+    }
+
+    /** Register a callback that fires once the user has picked a point (or cancelled). */
+    public void setOnMapClickComplete(Runnable callback) {
+        this.onMapClickComplete = callback;
     }
 
     public void enableMapClicking(boolean enable) {
@@ -91,7 +101,6 @@ public class Map extends JPanel {
         doFindRoute = !doFindRoute;
     }
 
-    // Method to add a new reported crime (yellow)
     public void addReportedCrime(Crime reportedCrime) {
         graphPainter.reportCrime(reportedCrime);
         graphPainter.paintWaypoints();
@@ -112,15 +121,10 @@ public class Map extends JPanel {
             "51.509857,-0.074201",
             "51.509443,-0.103340"
         };
-
         CrimeAPI crimeFinder = new CrimeAPI(regionBoundaries);
         Set<Crime> crimes = crimeFinder.getCrimesByDate("2026-01");
-
-
         for (Crime c : crimes) {
-            double endLat = c.getLatitude();
-            double endLong = c.getLongitude();
-            graphPainter.setRouteWaypoints(startLat, startLong, endLat, endLong); 
+            graphPainter.setRouteWaypoints(startLat, startLong, c.getLatitude(), c.getLongitude());
             break;
         }
     }
