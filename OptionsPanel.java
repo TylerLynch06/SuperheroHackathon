@@ -16,11 +16,11 @@ public class OptionsPanel extends JPanel {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         buttonPanel.setBackground(new Color(45, 45, 45));
         buttonPanel.add(createReportButton(map));
-        buttonPanel.add(createViewRecentCrimesButton());
-        buttonPanel.add(createCrimeToggleButton());
+        buttonPanel.add(createViewRecentCrimesButton(map));
         buttonPanel.add(createRequestAssistanceButton(map));
+        buttonPanel.add(createClearRoutesButton());
+        
         add(buttonPanel);
-
         add(reportCrimePanel);
         add(requestAssistancePanel);
     }
@@ -60,15 +60,7 @@ public class OptionsPanel extends JPanel {
         return styleButton(reportButton, new Color(60, 60, 60), new Color(220, 50, 50));
     }
 
-    private JButton createCrimeToggleButton() {
-        JButton toggle = new JButton("Toggle Crime");
-        toggle.addActionListener(e -> {
-
-        });
-        return styleButton(toggle, new Color(60, 60, 60), new Color(220, 50, 50));
-    }
-
-    private JButton createViewRecentCrimesButton() {
+    private JButton createViewRecentCrimesButton(Map map) {
         JButton viewRecentCrimesButton = new JButton("View Recent Crimes");
         viewRecentCrimesButton.addActionListener(e -> {
             String[] coords = {
@@ -79,6 +71,7 @@ public class OptionsPanel extends JPanel {
             };
             CrimeAPI crimeAPI = new CrimeAPI(coords);
             Set<Crime> recentCrimes = crimeAPI.getCrimesByDate("2026-01");
+            map.toggleCrimePlot();
         });
         JButton styled = styleButton(viewRecentCrimesButton, new Color(60, 60, 60), new Color(50, 150, 220));
         styled.setFont(new Font("Arial", Font.BOLD, 10));
@@ -96,5 +89,14 @@ public class OptionsPanel extends JPanel {
             repaint();
         });
         return styleButton(requestAssistanceButton, new Color(60, 60, 60), new Color(220, 200, 50));
+    }
+
+    private JButton createClearRoutesButton() {
+        JButton clearRoutesButton = new JButton("Clear Routes");
+        clearRoutesButton.addActionListener(e -> {
+            revalidate();
+            repaint();
+        });
+        return styleButton(clearRoutesButton, new Color(60, 60, 60), new Color(220, 200, 50));
     }
 }
