@@ -17,6 +17,8 @@ public class Map extends JPanel {
     private GraphPainter graphPainter;
     private boolean doPlaceMarker = false; // Flag to check if the user can click on the map
     private boolean doFindRoute = false;    
+
+    private static final int HIT_RADIUS_PX = 10;
     
     public Map() {
         setLayout(new BorderLayout());
@@ -27,14 +29,14 @@ public class Map extends JPanel {
         TileFactoryInfo info = new TileFactoryInfo(
             1, 15, 17,
             256, true, true,
-            "https://tile.openstreetmap.org",
+            "https://a.tiles.openrailwaymap.org/standard",
             "x", "y", "z") {
-                @Override
-                public String getTileUrl(int x, int y, int zoom) {
-                    int z = 17 - zoom;
-                    return this.baseURL + "/" + z + "/" + x + "/" + y + ".png";
-                }
-            };
+        @Override
+        public String getTileUrl(int x, int y, int zoom) {
+            int z = 17 - zoom;
+            return "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/" + z + "/" + y + "/" + x;
+        }
+    };
 
         DefaultTileFactory tileFactory = new DefaultTileFactory(info);
         mapViewer.setTileFactory(tileFactory);
@@ -48,7 +50,6 @@ public class Map extends JPanel {
 
         // graphPainter.setDoPlotCrime(false);
         graphPainter.setCrimeWaypoints();
-        graphPainter.setRouteWaypoints();
         graphPainter.paintWaypoints();
 
         add(mapViewer, BorderLayout.CENTER); // Add map viewer to panel
@@ -57,9 +58,16 @@ public class Map extends JPanel {
         mapViewer.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+
+                Point2D clickPoint = e.getPoint();
+
+                Crime hitCrime = findWaypointAtPoint(clickPoint);
+                if (hitCrime != null) {
+                    showCrimeInfo(hitCrime);
+                }
+
                 if (doPlaceMarker) {
                     // Get the latitude and longitude of the clicked point
-                    Point2D clickPoint = e.getPoint();
                     GeoPosition clickedPosition = mapViewer.convertPointToGeoPosition(clickPoint);
 
                     double latitude = clickedPosition.getLatitude();
@@ -83,6 +91,35 @@ public class Map extends JPanel {
             }
         });
     }
+
+    public Crime findWaypointAtPoint(Point2D clickPoint) {
+        Set<Crime> crimes = graphPainter.getAllCrimes();
+        Crime closest = null;  
+        double bestDist = HIT_RADIUS_PX;
+
+        for(Crime crime : crimes) {
+           GeoPosition pos = new GeoPosition(crime.getLatitude(), crime.getLongitude());
+            Point2D waypointPoint = mapViewer.convertGeoPositionToPoint(pos);
+
+            double dist = clickPoint.distance(waypointPoint);
+            if (dist < bestDist) {
+                bestDist = dist;
+                closest = crime;
+            }
+        }
+        return closest;
+    }
+
+    public void showCrimeInfo(Crime crime) {
+        String message = String.format(
+            "Crime at (%.5f, %.5f)\nType: %s",
+            crime.getLatitude(),
+            crime.getLongitude(),
+            crime.getType()          // adjust to your actual Crime getters
+        );
+        JOptionPane.showMessageDialog(this, message, "Waypoint info",
+            JOptionPane.INFORMATION_MESSAGE);
+    }   
 
     public void enableMapClicking(boolean enable) {
         this.doPlaceMarker = enable;
