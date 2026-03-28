@@ -1,0 +1,20 @@
+import java.net.*;
+
+public class InputThread extends Thread {
+
+    private OutputThread outputThread;
+
+    public InputThread(OutputThread outputThread) {
+        this.outputThread = outputThread;
+    }
+
+    public void run() throws Exception {
+
+        Connect connect = new Connect();
+
+        // jsonString = String.format('{"crimeType": %s}')
+
+        // JsonReader reader = Json.createReader(new StringReader(jsonString));
+        // JsonObject object = reader.readObject();
+    }
+}
