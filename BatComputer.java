@@ -3,7 +3,7 @@ import javax.swing.*;
 
 public class BatComputer extends JFrame {
 
-    public BatComputer() {
+    public BatComputer() throws Exception {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(900, 900);
         this.setUndecorated(true);
