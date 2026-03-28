@@ -97,6 +97,7 @@ public class GraphPainter {
     public void resetWaypoints() {
         crimeWaypoints.clear();
         routeWaypoints.clear();
+        paintWaypoints();
     }
 
     // Method to paint the markers on the map

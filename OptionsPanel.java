@@ -52,7 +52,7 @@ public class OptionsPanel extends JPanel {
             map.toggleCrimePlot();
         });
 
-        clearBtn.addActionListener(e -> map.clearWaypoints());
+        clearBtn.addActionListener(e -> map.clearRoutes());
 
         buttonPanel.add(reportBtn);
         buttonPanel.add(viewBtn);
