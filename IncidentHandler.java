@@ -19,7 +19,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 
 public abstract class IncidentHandler {
     protected final String jsonKey;
-    protected final long TIMELIMIT = 3600; //How many seconds back in time to check for reports/requests from
+    protected final long TIMELIMIT = 1800; //How many seconds back in time to check for reports/requests from
 
     public IncidentHandler() {
         this.jsonKey = getAccessKey("JSON-AccessKey.txt"); //JSONBin.io access key
