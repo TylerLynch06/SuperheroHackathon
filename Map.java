@@ -165,4 +165,8 @@ public class Map extends JPanel {
     public void clearWaypoints() {
         graphPainter.resetWaypoints();
     }
+
+    public void clearRoutes() {
+        graphPainter.clearRoutes();
+    }
 }

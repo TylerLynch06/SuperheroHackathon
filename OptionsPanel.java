@@ -126,14 +126,54 @@ public class OptionsPanel extends JPanel {
                 }
             }
             public void mouseExited(java.awt.event.MouseEvent e) {
-                if (!btn.getBackground().equals(accent)) {
-                    btn.setBackground(new Color(38, 38, 44));
-                    btn.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(new Color(55, 55, 65), 1),
-                        BorderFactory.createEmptyBorder(7, 20, 7, 20)
-                    ));
-                }
+                btn.setBackground(new Color(38, 38, 44));
+                btn.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(55, 55, 65), 1),
+                    BorderFactory.createEmptyBorder(7, 20, 7, 20)
+                ));
             }
+        });
+        return btn;
+    }
+
+    private JButton createReportButton(Map map) {
+        JButton btn = makeButton("Report Crime", ACCENT_RED);
+        btn.addActionListener(e -> {
+            map.enableMapClicking(true);
+            togglePanel(reportCrimePanel, requestAssistancePanel);
+        });
+        return btn;
+    }
+
+    private JButton createViewRecentCrimesButton(Map map) {
+        JButton btn = makeButton("View Recent Crimes", ACCENT_BLUE);
+        btn.addActionListener(e -> {
+            String[] coords = {
+                "51.517651,-0.101350", "51.519324,-0.079203",
+                "51.509857,-0.074201", "51.509443,-0.103340"
+            };
+            CrimeAPI crimeAPI = new CrimeAPI(coords);
+            Set<Crime> recentCrimes = crimeAPI.getCrimesByDate("2026-01");
+            map.toggleCrimePlot();
+        });
+        return btn;
+    }
+
+    private JButton createRequestAssistanceButton(Map map) {
+        JButton btn = makeButton("Request Assistance", ACCENT_AMBER);
+        btn.addActionListener(e -> {
+            map.enableMapClicking(true);
+            map.toggleFindRoute();
+            togglePanel(requestAssistancePanel, reportCrimePanel);
+        });
+        return btn;
+    }
+
+    private JButton createClearRoutesButton(Map map) {
+        JButton btn = makeButton("Clear Routes", TEXT_MUTED);
+        btn.addActionListener(e -> {
+            Window window = SwingUtilities.getWindowAncestor(this);
+            if (window != null) { window.revalidate(); window.repaint(); }
         });
         return btn;
     }

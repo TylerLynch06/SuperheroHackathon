@@ -47,12 +47,33 @@ public class GraphPainter {
     }
 
     public void setRouteWaypoints(double startLat, double startLong, double endLat, double endLong) {
+        int subPointCount = 8;
         Router router = new Router();
+        boolean first = true;
+        double prevLat = 0;
+        double prevLon = 0;
         Route route = router.createRoute(startLat, startLong, endLat, endLong);
         for (double[] array : route.getCoordinates()) {
             double lat = array[0];
             double lon = array[1];
+            if (!first) {
+                setSubpoints(lat,lon, prevLat,prevLon, subPointCount);
+            }
+            prevLat = lat;
+            prevLon = lon;
+            first = false;
             waypointPainter(routeWaypoints, lat, lon, "route");
+        }
+    }
+
+    private void setSubpoints(double lat1, double lon1, double lat2, double lon2, int points) {
+        if (points == 1) {
+            waypointPainter(routeWaypoints, (lat1+lat2)/2, (lon1+lon2)/2, "route");
+            return;
+        }
+        else {
+            setSubpoints(lat1,lon1,(lat1+lat2)/2,(lon1+lon2)/2, points/2);
+            setSubpoints((lat1+lat2)/2,(lon1+lon2)/2,lat2, lon2, points/2);
         }
     }
 
@@ -140,6 +161,11 @@ public class GraphPainter {
 
         public String getType() { return type; }
         public Crime getCrime() { return crime; } // null if not a crime point
+    }
+
+    public void clearRoutes() {
+        routeWaypoints.clear();
+        paintWaypoints();
     }
 
     public void toggleDoPlotCrime() {
