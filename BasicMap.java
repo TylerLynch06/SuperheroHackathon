@@ -47,6 +47,7 @@ public class BasicMap {
         mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCursor(mapViewer));
 
         // Add marker
+
             
         Set<Waypoint> waypoints = new HashSet<>();
 
@@ -54,7 +55,7 @@ public class BasicMap {
 
         // Gets route
         Router router = new Router();
-        Route route = router.createRoute(-0.1278, 51.5074, -0.081829, 51.530811);
+        Route route = router.createRoute(51.5074 ,-0.1278, -0.081829,51.530811 );
         for(double[] array : route.getCoordinates()) {
             double lat = array[1];
             double longitude = array[0];
@@ -62,20 +63,22 @@ public class BasicMap {
             System.out.println(longitude);
             waypointPainter(waypoints, lat, longitude);
         }
-        WaypointPainter<Waypoint> painter = new WaypointPainter<>();
+        WaypointPainter<Waypoint> painter = paintMarker(mapViewer);
+
         painter.setWaypoints(waypoints);
         mapViewer.setOverlayPainter(painter);
+        paintMarker(mapViewer);
 
         frame.add(mapViewer);
         frame.setVisible(true);
     }
 
     public static void waypointPainter(Set<Waypoint> waypoints, double lat, double longitude) {
-        Waypoint currentPoint = new DefaultWaypoint(lat, -longitude);
+        Waypoint currentPoint = new DefaultWaypoint(lat, longitude);
         waypoints.add(currentPoint);
     }
 
-    public static void paintMarker(JXMapViewer map) {
+    public static WaypointPainter<Waypoint> paintMarker(JXMapViewer map) {
         WaypointPainter<Waypoint> painter = new WaypointPainter<>() {
             @Override
             protected void doPaint(Graphics2D g, JXMapViewer map, int w, int h) {
@@ -92,5 +95,6 @@ public class BasicMap {
                 }
             }
         };
+        return painter;
     }
 }
