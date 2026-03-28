@@ -48,7 +48,15 @@ public class OptionsPanel extends JPanel {
     private JButton createViewRecentCrimesButton() {
         JButton viewRecentCrimesButton = new JButton("View Recent Crimes");
         viewRecentCrimesButton.addActionListener(e -> {
-            // get recent crimes and show them on the map
+            String[] coords = {
+                "51.517651,-0.101350",
+                "51.519324,-0.079203",
+                "51.509857,-0.074201",
+                "51.509443,-0.103340"
+            };
+            CrimeAPI crimeAPI = new CrimeAPI(coords);
+
+            Set<Crime> recentCrimes = crimeAPI.getCrimesByDate("2026-01");
         });
         return viewRecentCrimesButton;
     }
