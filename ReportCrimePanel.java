@@ -28,6 +28,7 @@ public class ReportCrimePanel extends BaseInputPanel {
             try {
                 double[] coords = getCoordinates(location);
                 Crime reportedCrime = new Crime(coords[0], coords[1], crimeType);
+                System.out.println(coords[0]);
                 map.addReportedCrime(reportedCrime);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,

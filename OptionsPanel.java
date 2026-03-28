@@ -7,98 +7,122 @@ public class OptionsPanel extends JPanel {
     private ReportCrimePanel reportCrimePanel;
     private RequestAssistancePanel requestAssistancePanel;
 
+    static final Color BG_PANEL     = new Color(22, 22, 26);
+    static final Color BG_TOOLBAR   = new Color(28, 28, 32);
+    static final Color BORDER_COLOR = new Color(50, 50, 58);
+    static final Color TEXT_PRIMARY = new Color(220, 220, 228);
+    static final Color TEXT_MUTED   = new Color(110, 110, 125);
+    static final Color ACCENT_RED   = new Color(196, 43, 43);
+    static final Color ACCENT_BLUE  = new Color(48, 120, 214);
+    static final Color ACCENT_AMBER = new Color(190, 150, 30);
+
     public OptionsPanel(Map map) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBackground(BG_PANEL);
+        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, BORDER_COLOR));
 
-        reportCrimePanel = new ReportCrimePanel(map);
+        reportCrimePanel       = new ReportCrimePanel(map);
         requestAssistancePanel = new RequestAssistancePanel();
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        buttonPanel.setBackground(new Color(45, 45, 45));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 12));
+        buttonPanel.setBackground(BG_TOOLBAR);
         buttonPanel.add(createReportButton(map));
         buttonPanel.add(createViewRecentCrimesButton(map));
         buttonPanel.add(createRequestAssistanceButton(map));
         buttonPanel.add(createClearRoutesButton(map));
-        
+
         add(buttonPanel);
         add(reportCrimePanel);
         add(requestAssistancePanel);
     }
 
-    private JButton styleButton(JButton button, Color bgColor, Color textColor) {
-        button.setFont(new Font("Arial", Font.BOLD, 13));
-        button.setForeground(textColor);
-        button.setBackground(bgColor);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(180, 40));
+    private void togglePanel(JPanel toShow, JPanel toHide) {
+        boolean nowVisible = !toShow.isVisible();
+        toShow.setVisible(nowVisible);
+        toHide.setVisible(false);
 
-        Color hoverColor = bgColor.darker();
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
+        // Walk up to the root frame and revalidate so BorderLayout resizes
+        Window window = SwingUtilities.getWindowAncestor(this);
+        if (window != null) {
+            window.revalidate();
+            window.repaint();
+        } else {
+            revalidate();
+            repaint();
+        }
+    }
+
+    private JButton makeButton(String label, Color accent) {
+        JButton btn = new JButton(label);
+        btn.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btn.setForeground(accent);
+        btn.setBackground(new Color(38, 38, 44));
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(55, 55, 65), 1),
+            BorderFactory.createEmptyBorder(7, 20, 7, 20)
+        ));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setPreferredSize(new Dimension(175, 38));
+
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                button.setBackground(hoverColor);
+                btn.setBackground(accent.darker().darker());
+                btn.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(accent, 1),
+                    BorderFactory.createEmptyBorder(7, 20, 7, 20)
+                ));
             }
             public void mouseExited(java.awt.event.MouseEvent e) {
-                button.setBackground(bgColor);
+                btn.setBackground(new Color(38, 38, 44));
+                btn.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(55, 55, 65), 1),
+                    BorderFactory.createEmptyBorder(7, 20, 7, 20)
+                ));
             }
         });
-
-        return button;
+        return btn;
     }
 
     private JButton createReportButton(Map map) {
-        JButton reportButton = new JButton("Report Crime");
-        reportButton.addActionListener(e -> {
+        JButton btn = makeButton("Report Crime", ACCENT_RED);
+        btn.addActionListener(e -> {
             map.enableMapClicking(true);
-            boolean nowVisible = !reportCrimePanel.isVisible();
-            reportCrimePanel.setVisible(nowVisible);
-            if (nowVisible) requestAssistancePanel.setVisible(false);
-            revalidate();
-            repaint();
+            togglePanel(reportCrimePanel, requestAssistancePanel);
         });
-        return styleButton(reportButton, new Color(60, 60, 60), new Color(220, 50, 50));
+        return btn;
     }
 
     private JButton createViewRecentCrimesButton(Map map) {
-        JButton viewRecentCrimesButton = new JButton("View Recent Crimes");
-        viewRecentCrimesButton.addActionListener(e -> {
+        JButton btn = makeButton("View Recent Crimes", ACCENT_BLUE);
+        btn.addActionListener(e -> {
             String[] coords = {
-                "51.517651,-0.101350",
-                "51.519324,-0.079203",
-                "51.509857,-0.074201",
-                "51.509443,-0.103340"
+                "51.517651,-0.101350", "51.519324,-0.079203",
+                "51.509857,-0.074201", "51.509443,-0.103340"
             };
             CrimeAPI crimeAPI = new CrimeAPI(coords);
             Set<Crime> recentCrimes = crimeAPI.getCrimesByDate("2026-01");
             map.toggleCrimePlot();
         });
-        JButton styled = styleButton(viewRecentCrimesButton, new Color(60, 60, 60), new Color(50, 150, 220));
-        styled.setFont(new Font("Arial", Font.BOLD, 10));
-        return styled;
+        return btn;
     }
 
     private JButton createRequestAssistanceButton(Map map) {
-        JButton requestAssistanceButton = new JButton("Request Assistance");
-        requestAssistanceButton.addActionListener(e -> {
+        JButton btn = makeButton("Request Assistance", ACCENT_AMBER);
+        btn.addActionListener(e -> {
             map.enableMapClicking(true);
             map.toggleFindRoute();
-            boolean nowVisible = !requestAssistancePanel.isVisible();
-            requestAssistancePanel.setVisible(nowVisible);
-            if (nowVisible) reportCrimePanel.setVisible(false);
-            revalidate();
-            repaint();
+            togglePanel(requestAssistancePanel, reportCrimePanel);
         });
-        return styleButton(requestAssistanceButton, new Color(60, 60, 60), new Color(220, 200, 50));
+        return btn;
     }
 
     private JButton createClearRoutesButton(Map map) {
-        JButton clearRoutesButton = new JButton("Clear Routes");
-        clearRoutesButton.addActionListener(e -> {
-            //map.clearWaypoints();
-            revalidate();
-            repaint();
+        JButton btn = makeButton("Clear Routes", TEXT_MUTED);
+        btn.addActionListener(e -> {
+            Window window = SwingUtilities.getWindowAncestor(this);
+            if (window != null) { window.revalidate(); window.repaint(); }
         });
-        return styleButton(clearRoutesButton, new Color(60, 60, 60), new Color(220, 200, 50));
+        return btn;
     }
 }

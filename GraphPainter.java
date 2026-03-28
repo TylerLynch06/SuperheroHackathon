@@ -47,17 +47,6 @@ public class GraphPainter {
         mapViewer.setOverlayPainter(painter);
     }
 
-    public void setRouteWaypoints() {
-        Router router = new Router();
-        Route route = router.createRoute(51.5074, -0.1278, 51.530811, -0.081829);
-        for (double[] array : route.getCoordinates()) {
-            double lat = array[0];
-            double lon = array[1];
-            waypointPainter(routeWaypoints, lat, lon, "route");
-        }
-    }
-
-
     public void setRouteWaypoints(double startLat, double startLong, double endLat, double endLong) {
         Router router = new Router();
         Route route = router.createRoute(startLat, startLong, endLat, endLong);

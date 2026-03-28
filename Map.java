@@ -48,7 +48,6 @@ public class Map extends JPanel {
 
         // graphPainter.setDoPlotCrime(false);
         graphPainter.setCrimeWaypoints();
-        graphPainter.setRouteWaypoints();
         graphPainter.paintWaypoints();
 
         add(mapViewer, BorderLayout.CENTER); // Add map viewer to panel
