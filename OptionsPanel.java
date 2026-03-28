@@ -80,7 +80,7 @@ public class OptionsPanel extends JPanel {
             Set<Crime> recentCrimes = crimeAPI.getCrimesByDate("2026-01");
         });
         JButton styled = styleButton(viewRecentCrimesButton, new Color(60, 60, 60), new Color(50, 150, 220));
-        styled.setFont(new Font("Arial", Font.BOLD, 10)); // smaller font
+        styled.setFont(new Font("Arial", Font.BOLD, 10));
         return styled;
     }
 
