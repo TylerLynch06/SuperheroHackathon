@@ -57,6 +57,17 @@ public class GraphPainter {
         }
     }
 
+
+    public void setRouteWaypoints(double startLat, double startLong, double endLat, double endLong) {
+        Router router = new Router();
+        Route route = router.createRoute(startLat, startLong, endLat, endLong);
+        for (double[] array : route.getCoordinates()) {
+            double lat = array[0];
+            double lon = array[1];
+            waypointPainter(routeWaypoints, lat, lon, "route");
+        }
+    }
+
     // Method to add the initial crime points from the API (blue)
     public void setCrimeWaypoints() {
         String[] regionBoundaries = {

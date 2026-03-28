@@ -1,20 +1,21 @@
-// Map.java
 import org.jxmapviewer.*;
 import org.jxmapviewer.viewer.*;
 import org.jxmapviewer.painter.*;
 import javax.swing.*;
 import java.util.*;
 import org.jxmapviewer.input.*;
-import java.util.HashSet;
-import java.util.Set;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.security.CodeSource;
 
 public class Map extends JPanel {
 
     private JXMapViewer mapViewer;
     private Set<Waypoint> allWaypoints; // Store all crime and route points
     private GraphPainter graphPainter;
+    private boolean canClickMap = false; // Flag to check if the user can click on the map
 
     Map() {
         setLayout(new BorderLayout());
@@ -44,24 +45,47 @@ public class Map extends JPanel {
 
         graphPainter = new GraphPainter(mapViewer); 
 
-        //graphPainter.setDoPlotCrime(false);
-
-        //Paint here
+        // graphPainter.setDoPlotCrime(false);
         graphPainter.setCrimeWaypoints();
         graphPainter.setRouteWaypoints();
-        //Reported crimes are added as waypoints in the 'addReportedCrimeMethod'
         graphPainter.paintWaypoints();
 
         add(mapViewer, BorderLayout.CENTER); // Add map viewer to panel
+
+        // Add mouse listener for capturing clicks
+        mapViewer.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (canClickMap) {
+                    // Get the latitude and longitude of the clicked point
+                    Point2D clickPoint = e.getPoint();
+                    GeoPosition clickedPosition = mapViewer.convertPointToGeoPosition(clickPoint);
+
+                    double latitude = clickedPosition.getLatitude();
+                    double longitude = clickedPosition.getLongitude();
+
+                    Crime crime = new Crime(latitude, longitude, "Report");
+                    graphPainter.reportCrime(crime);
+                    routeToCrime(latitude, longitude);
+                    graphPainter.paintWaypoints();
+
+
+                    // Disable further clicks on the map until the "Report Crime" button is pressed again
+                    canClickMap = false;
+                } else {
+                    // Inform the user to click the "Report Crime" button first
+                    System.out.println("Please click the 'Report Crime' button first.");
+                }
+            }
+        });
+    }
+
+    public void enableMapClicking(boolean enable) {
+        this.canClickMap = enable;
     }
 
     // Method to add a new reported crime (yellow)
     public void addReportedCrime(Crime reportedCrime) {
-        //waypointPainter(allWaypoints, reportedCrime.getLatitude(), reportedCrime.getLongitude(), "reported");
-        //WaypointPainter<Waypoint> painter = paintMarker(mapViewer);
-        //painter.setWaypoints(allWaypoints);
-        //mapViewer.setOverlayPainter(painter);
-        //repaint(); // Refresh the map
         graphPainter.reportCrime(reportedCrime);
         graphPainter.paintWaypoints();
     }
@@ -74,4 +98,23 @@ public class Map extends JPanel {
         graphPainter.toggleDoPlotRoute();
     }
 
+    public void routeToCrime(double startLat, double startLong) {
+        String[] regionBoundaries = {
+            "51.517651,-0.101350",
+            "51.519324,-0.079203",
+            "51.509857,-0.074201",
+            "51.509443,-0.103340"
+        };
+
+        CrimeAPI crimeFinder = new CrimeAPI(regionBoundaries);
+        Set<Crime> crimes = crimeFinder.getCrimesByDate("2026-01");
+
+
+        for (Crime c : crimes) {
+            double endLat = c.getLatitude();
+            double endLong = c.getLongitude();
+            graphPainter.setRouteWaypoints(startLat, startLong, endLat, endLong); 
+            break;
+        }
+    }
 }
