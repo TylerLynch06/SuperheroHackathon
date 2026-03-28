@@ -82,6 +82,7 @@ public class OptionsPanel extends JPanel {
         JButton requestAssistanceButton = new JButton("Request Assistance");
         requestAssistanceButton.addActionListener(e -> {
             map.enableMapClicking(true);
+            map.toggleFindRoute();
             boolean nowVisible = !requestAssistancePanel.isVisible();
             requestAssistancePanel.setVisible(nowVisible);
             if (nowVisible) reportCrimePanel.setVisible(false);

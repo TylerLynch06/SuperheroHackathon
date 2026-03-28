@@ -15,9 +15,10 @@ public class Map extends JPanel {
     private JXMapViewer mapViewer;
     private Set<Waypoint> allWaypoints; // Store all crime and route points
     private GraphPainter graphPainter;
-    private boolean canClickMap = false; // Flag to check if the user can click on the map
-
-    Map() {
+    private boolean doPlaceMarker = false; // Flag to check if the user can click on the map
+    private boolean doFindRoute = false;    
+    
+    public Map() {
         setLayout(new BorderLayout());
 
         mapViewer = new JXMapViewer();
@@ -56,7 +57,7 @@ public class Map extends JPanel {
         mapViewer.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (canClickMap) {
+                if (doPlaceMarker) {
                     // Get the latitude and longitude of the clicked point
                     Point2D clickPoint = e.getPoint();
                     GeoPosition clickedPosition = mapViewer.convertPointToGeoPosition(clickPoint);
@@ -64,14 +65,17 @@ public class Map extends JPanel {
                     double latitude = clickedPosition.getLatitude();
                     double longitude = clickedPosition.getLongitude();
 
-                    Crime crime = new Crime(latitude, longitude, "Report");
+                    Crime crime = new Crime(latitude, longitude, "reported");
                     graphPainter.reportCrime(crime);
-                    routeToCrime(latitude, longitude);
+                    if (doFindRoute) {
+                        routeToCrime(latitude, longitude);
+                    }
                     graphPainter.paintWaypoints();
-
+                    
 
                     // Disable further clicks on the map until the "Report Crime" button is pressed again
-                    canClickMap = false;
+                    doPlaceMarker = false;
+                    doFindRoute = false;
                 } else {
                     // Inform the user to click the "Report Crime" button first
                     System.out.println("Please click the 'Report Crime' button first.");
@@ -81,7 +85,11 @@ public class Map extends JPanel {
     }
 
     public void enableMapClicking(boolean enable) {
-        this.canClickMap = enable;
+        this.doPlaceMarker = enable;
+    }
+
+    public void toggleFindRoute() {
+        doFindRoute = !doFindRoute;
     }
 
     // Method to add a new reported crime (yellow)
