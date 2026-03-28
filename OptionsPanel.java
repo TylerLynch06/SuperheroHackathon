@@ -10,7 +10,7 @@ public class OptionsPanel extends JPanel {
     private JTextField locationField = new JTextField(15);
     private JTextField descriptionField = new JTextField(15);
     private JLabel locationLabel = new JLabel("Location (PostCode):");
-    private JLabel descriptionLabel = new JLabel("Description:");
+    private JLabel descriptionLabel = new JLabel("Crime Type:");
     private JButton submitButton = new JButton("Submit");
 
     public OptionsPanel() {
@@ -49,12 +49,15 @@ public class OptionsPanel extends JPanel {
     private void setupSubmitButton() {
         submitButton.addActionListener(e -> {
             String location = locationField.getText();
-            String description = descriptionField.getText();
+            String crimeType = descriptionField.getText();
 
             try {
                 double[] coords = getCoordinates(location);
                 double lat = coords[0];
                 double lon = coords[1];
+
+                Crime reportedCrime = new Crime(lat, lon, crimeType);
+
                 System.out.println("Latitude: " + lat);
                 System.out.println("Longitude: " + lon);
             } catch (Exception ex) {
