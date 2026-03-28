@@ -25,12 +25,13 @@ import java.util.stream.Collectors;
 
 public class Router {
 
-    public Route createRoute(double startLon, double startLat, double endLon, double endLat) {
+    public Route createRoute(double startLat, double startLon, double endLon, double endLat) {
         Route route = null;
         try {
-            String response = callMapApi(startLon, startLat, endLon, endLat);
+            String response = callMapApi(startLat, startLon, endLat, endLon);
             JsonReader reader = Json.createReader(new StringReader(response));
             JsonObject root = reader.readObject();
+            //pointDouble
 
             JsonArray coordinates = root.getJsonArray("routes").getJsonObject(0).getJsonObject("geometry").getJsonArray("coordinates");
             double[][] points = new double[coordinates.size()][2];
@@ -49,7 +50,7 @@ public class Router {
         return route;
     }
 
-    public String callMapApi(double startLon, double startLat, double endLon, double endLat) throws Exception {
+    private String callMapApi(double startLat, double startLon, double endLat, double endLon) throws Exception {
         String url = "http://router.project-osrm.org/route/v1/driving/"
                    + startLon + "," + startLat + ";"
                    + endLon   + "," + endLat
@@ -67,7 +68,7 @@ public class Router {
     }
 
     //Returns a whole JSON file as a string from a given url
-    public String getJsonString(String url) throws IOException, InterruptedException, URISyntaxException {
+    private String getJsonString(String url) throws IOException, InterruptedException, URISyntaxException {
         //Build a request for a certain url
         HttpRequest request = HttpRequest.newBuilder()
             .uri(new URI(url))
@@ -79,20 +80,4 @@ public class Router {
         String jsonString = response.body();
         return jsonString;
     }
-
-    // public static void outputStringToJson(String jsonString, String outputFile) throws Exception{
-    //     Map<String, Object> properties = new HashMap<>(1);
-    //     properties.put(JsonGenerator.PRETTY_PRINTING, true);
-    //     try (JsonReader reader = Json.createReader(new StringReader(jsonString));
-    //         FileWriter w = new FileWriter(outputFile);) {
-    //         //Turn it into a json object (allows for further manipulation)
-    //         JsonStructure jsonObject = reader.read();
-    //         JsonWriterFactory jf = Json.createWriterFactory(properties);
-            
-    //         JsonWriter jg = jf.createWriter(w);
-    //         jg.write(jsonObject);
-    //         jg.close();
-    //         w.close();
-    //     }
-    // }
 }
