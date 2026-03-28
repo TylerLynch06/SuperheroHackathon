@@ -95,6 +95,7 @@ public class OptionsPanel extends JPanel {
     private JButton createClearRoutesButton(Map map) {
         JButton clearRoutesButton = new JButton("Clear Routes");
         clearRoutesButton.addActionListener(e -> {
+            //map.clearWaypoints();
             revalidate();
             repaint();
         });
