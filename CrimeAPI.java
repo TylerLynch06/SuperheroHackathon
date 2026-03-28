@@ -44,8 +44,8 @@ public class CrimeAPI {
             JsonObject object = reader.readObject();
 
             Crime crime = new Crime(
-                object.getJsonObject("location").getString("latitude"),
-                object.getJsonObject("location").getString("longitude"),
+                Double.parseDouble(object.getJsonObject("location").getString("latitude")),
+                Double.parseDouble(object.getJsonObject("location").getString("longitude")),
                 object.getString("category")
             );
             

@@ -1,21 +1,21 @@
 //Represents an individual crime
 
 public class Crime {
-    private String latitude;
-    private String longitude;
+    private double latitude;
+    private double longitude;
     private String crimeType;
 
-    public Crime(String latitude, String longitude, String crimeType) {
+    public Crime(double latitude, double longitude, String crimeType) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.crimeType = crimeType;
     }
 
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
