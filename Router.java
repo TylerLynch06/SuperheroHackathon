@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 public class Router {
 
-    public Route createRoute(double startLat, double startLon, double endLon, double endLat) {
+    public Route createRoute(double startLat, double startLon, double endLat, double endLon) {
         Route route = null;
         try {
             String response = callMapApi(startLat, startLon, endLat, endLon);
@@ -37,8 +37,8 @@ public class Router {
             double[][] points = new double[coordinates.size()][2];
             for (int i = 0; i < coordinates.size(); i++) {
                 JsonArray point = coordinates.getJsonArray(i);
-                double latitude = point.getJsonNumber(0).doubleValue();
-                double longitude = point.getJsonNumber(1).doubleValue();
+                double latitude = point.getJsonNumber(1).doubleValue();
+                double longitude = point.getJsonNumber(0).doubleValue();
                 double[] pointDouble = {(float)latitude, (float) longitude};
                 points[i] = pointDouble;
             }
