@@ -1,4 +1,4 @@
-//Represents an individual crime
+//Represents a historic crime from the police API
 
 public class Crime {
     private double latitude;

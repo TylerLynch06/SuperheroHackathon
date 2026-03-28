@@ -25,7 +25,7 @@ public class TestCrimeAPI {
         };
 
         CrimeAPI crimeFinder = new CrimeAPI(coords);
-        Set<Crime> crimes = crimeFinder.getCrimesByDate("2024-10"); //get set of crimes
+        Set<Crime> crimes = crimeFinder.getCrimesByDate("2026-01"); //get set of crimes
         
         for (Crime c: crimes) {
             System.out.printf("%s was committed at %s, %s%n", c.getType(), c.getLatitude(), c.getLongitude());
