@@ -1,3 +1,4 @@
+// Map.java
 import org.jxmapviewer.*;
 import org.jxmapviewer.viewer.*;
 import org.jxmapviewer.painter.*;
@@ -12,6 +13,7 @@ import java.awt.geom.Point2D;
 public class Map extends JPanel {
 
     private JXMapViewer mapViewer;
+    private Set<Waypoint> allWaypoints; // Store all crime and route points
 
     Map() {
         setLayout(new BorderLayout());
@@ -39,10 +41,34 @@ public class Map extends JPanel {
         mapViewer.setAddressLocation(london);
         mapViewer.setZoom(2);
 
-        // Pan and zoom event listeners
-        //mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCursor(mapViewer));
+        // Initialize waypoints (to store all points, both route and crime)
+        allWaypoints = new HashSet<>();
 
-        // Add crime markers
+        // Add markers for the route (sample route)
+        Set<Waypoint> waypoints = new HashSet<>();
+        Router router = new Router();
+        Route route = router.createRoute(51.5074, -0.1278, 51.530811, -0.081829);
+        for (double[] array : route.getCoordinates()) {
+            double lat = array[0];
+            double lon = array[1];
+            waypointPainter(waypoints, lat, lon, "route");
+        }
+
+        allWaypoints.addAll(waypoints);
+
+        // Fetch initial crime data from the API
+        addAPICrimePoints();
+
+        // Combine all waypoints (route + API crimes) and set the painter
+        WaypointPainter<Waypoint> painter = paintMarker(mapViewer);
+        painter.setWaypoints(allWaypoints);
+        mapViewer.setOverlayPainter(painter);
+
+        add(mapViewer, BorderLayout.CENTER); // Add map viewer to panel
+    }
+
+    // Method to add the initial crime points from the API (blue)
+    private void addAPICrimePoints() {
         String[] regionBoundaries = {
             "51.517651,-0.101350",
             "51.519324,-0.079203",
@@ -53,41 +79,27 @@ public class Map extends JPanel {
         CrimeAPI crimeFinder = new CrimeAPI(regionBoundaries);
         Set<Crime> crimes = crimeFinder.getCrimesByDate("2026-01");
 
-        Set<Waypoint> crimePoints = new HashSet<>();
         for (Crime c : crimes) {
-            double crimeLat = c.getLatitude();
-            double crimeLongitude = c.getLongitude();
-            waypointPainter(crimePoints, crimeLat, crimeLongitude, "crime");
+            waypointPainter(allWaypoints, c.getLatitude(), c.getLongitude(), "crime");
         }
+    }
 
-        // Add markers for the route
-        Set<Waypoint> waypoints = new HashSet<>();
-        Router router = new Router();
-        Route route = router.createRoute(51.5074, -0.1278, 51.530811, -0.081829);
-        for (double[] array : route.getCoordinates()) {
-            double lat = array[0];
-            double longitude = array[1];
-            waypointPainter(waypoints, lat, longitude, "route");
-        }
-
-        // Combine both crime markers and route markers into the same set
-        Set<Waypoint> allWaypoints = new HashSet<>();
-        allWaypoints.addAll(crimePoints);
-        allWaypoints.addAll(waypoints);
-
-        // Now paint both the crime points and route points together
+    // Method to add a new reported crime (yellow)
+    public void addReportedCrime(Crime reportedCrime) {
+        waypointPainter(allWaypoints, reportedCrime.getLatitude(), reportedCrime.getLongitude(), "reported");
         WaypointPainter<Waypoint> painter = paintMarker(mapViewer);
         painter.setWaypoints(allWaypoints);
         mapViewer.setOverlayPainter(painter);
-
-        add(mapViewer, BorderLayout.CENTER); // Add map viewer to panel
+        repaint(); // Refresh the map
     }
 
+    // Utility method to add waypoints
     public static void waypointPainter(Set<Waypoint> waypoints, double lat, double longitude, String type) {
         Waypoint currentPoint = new CustomWaypoint(lat, longitude, type);
         waypoints.add(currentPoint);
     }
 
+    // Method to paint the markers on the map
     public static WaypointPainter<Waypoint> paintMarker(JXMapViewer map) {
         WaypointPainter<Waypoint> painter = new WaypointPainter<>() {
             @Override
@@ -99,14 +111,16 @@ public class Map extends JPanel {
                     int x = (int) (pt.getX() - mapCenter.getX() + w / 2);
                     int y = (int) (pt.getY() - mapCenter.getY() + h / 2);
                     
+                    // Draw crime points (blue) and new reported crimes (yellow)
                     if ("crime".equals(customWaypoint.getType())) {
-                        // Draw crime points (blue, bigger)
                         g.setColor(Color.BLUE);
-                        g.fillOval(x - 10, y - 10, 10, 10); // Bigger blue marker
+                        g.fillOval(x - 10, y - 10, 10, 10); // Blue for original crimes (larger)
+                    } else if ("reported".equals(customWaypoint.getType())) {
+                        g.setColor(Color.YELLOW);
+                        g.fillOval(x - 8, y - 8, 8, 8); // Yellow for reported crimes (slightly smaller)
                     } else if ("route".equals(customWaypoint.getType())) {
-                        // Draw route points (red, smaller)
                         g.setColor(Color.RED);
-                        g.fillOval(x - 5, y - 5, 5, 5); // Smaller red marker
+                        g.fillOval(x - 5, y - 5, 5, 5); // Red for route points (smaller)
                     }
                 }
             }
@@ -114,7 +128,7 @@ public class Map extends JPanel {
         return painter;
     }
 
-    // Custom Waypoint class that holds the type (crime/route)
+    // Custom Waypoint class that holds the type (crime, reported, route)
     static class CustomWaypoint extends DefaultWaypoint {
         private String type;
 

@@ -1,3 +1,4 @@
+// BatComputer.java
 import java.awt.*;
 import javax.swing.*;
 
@@ -17,7 +18,7 @@ public class BatComputer extends JFrame {
         Map map = new Map();
         this.add(map, BorderLayout.CENTER);
 
-        OptionsPanel optionsPanel = new OptionsPanel();
+        OptionsPanel optionsPanel = new OptionsPanel(map); // Pass map instance
         optionsPanel.setPreferredSize(new Dimension(900, 150));
         this.add(optionsPanel, BorderLayout.SOUTH);
 

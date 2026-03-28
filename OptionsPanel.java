@@ -1,3 +1,4 @@
+// OptionsPanel.java
 import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
@@ -15,8 +16,11 @@ public class OptionsPanel extends JPanel {
     private JButton submitButton = new JButton("Submit");
     private JPanel inputPanel = new JPanel(new FlowLayout());
 
-    public OptionsPanel() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    private Map map;
+    
+    public OptionsPanel(Map map) {
+        this.map = map;
+        setLayout(new FlowLayout());
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(createReportButton());
@@ -81,6 +85,10 @@ public class OptionsPanel extends JPanel {
                 Crime reportedCrime = new Crime(lat, lon, crimeType);
                 System.out.println("Latitude: " + lat);
                 System.out.println("Longitude: " + lon);
+
+                // Pass the crime object to the map
+                map.addReportedCrime(reportedCrime); // Update the map with the new crime
+
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,
                     "Could not find coordinates for that postcode.",
