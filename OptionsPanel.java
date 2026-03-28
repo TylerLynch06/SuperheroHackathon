@@ -1,5 +1,5 @@
 import javax.swing.*;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -12,22 +12,25 @@ public class OptionsPanel extends JPanel {
     private JLabel locationLabel = new JLabel("Location (PostCode):");
     private JLabel descriptionLabel = new JLabel("Crime Type:");
     private JButton submitButton = new JButton("Submit");
+    private JPanel inputPanel = new JPanel(new FlowLayout());
 
     public OptionsPanel() {
-        setLayout(new FlowLayout());
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        locationLabel.setVisible(false);
-        locationField.setVisible(false);
-        descriptionLabel.setVisible(false);
-        descriptionField.setVisible(false);
-        submitButton.setVisible(false);
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(createReportButton());
+        buttonPanel.add(createViewRecentCrimesButton());
+        buttonPanel.add(createRequestAssistanceButton());
+        add(buttonPanel);
 
-        add(createReportButton());
-        add(locationLabel);
-        add(locationField);
-        add(descriptionLabel);
-        add(descriptionField);
-        add(submitButton);
+        inputPanel = new JPanel(new FlowLayout());
+        inputPanel.add(locationLabel);
+        inputPanel.add(locationField);
+        inputPanel.add(descriptionLabel);
+        inputPanel.add(descriptionField);
+        inputPanel.add(submitButton);
+        inputPanel.setVisible(false);
+        add(inputPanel);
 
         setupSubmitButton();
     }
@@ -35,29 +38,38 @@ public class OptionsPanel extends JPanel {
     private JButton createReportButton() {
         JButton reportButton = new JButton("Report Crime");
         reportButton.addActionListener(e -> {
-            locationLabel.setVisible(true);
-            locationField.setVisible(true);
-            descriptionLabel.setVisible(true);
-            descriptionField.setVisible(true);
-            submitButton.setVisible(true);
+            inputPanel.setVisible(!inputPanel.isVisible());
             revalidate();
             repaint();
         });
         return reportButton;
     }
 
+    private JButton createViewRecentCrimesButton() {
+        JButton viewRecentCrimesButton = new JButton("View Recent Crimes");
+        viewRecentCrimesButton.addActionListener(e -> {
+            // get recent crimes and show them on the map
+        });
+        return viewRecentCrimesButton;
+    }
+
+    private JButton createRequestAssistanceButton() {
+        JButton requestAssistanceButton = new JButton("Request Assistance");
+        requestAssistanceButton.addActionListener(e -> {
+            // send request signal to other users
+        });
+        return requestAssistanceButton;
+    }
+
     private void setupSubmitButton() {
         submitButton.addActionListener(e -> {
             String location = locationField.getText();
             String crimeType = descriptionField.getText();
-
             try {
                 double[] coords = getCoordinates(location);
                 double lat = coords[0];
                 double lon = coords[1];
-
                 Crime reportedCrime = new Crime(lat, lon, crimeType);
-
                 System.out.println("Latitude: " + lat);
                 System.out.println("Longitude: " + lon);
             } catch (Exception ex) {
@@ -82,7 +94,6 @@ public class OptionsPanel extends JPanel {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
         String body = response.body();
 
         if (body.equals("[]")) {
