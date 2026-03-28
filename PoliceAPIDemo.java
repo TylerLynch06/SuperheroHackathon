@@ -12,22 +12,54 @@ import java.io.FileWriter;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.stream.JsonParser;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonGeneratorFactory;
-import javax.json.stream.JsonParser;
 import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 
 import java.io.StringReader;
+import java.io.*;
+
+import java.util.Scanner;
 
 
-public class PoliceAPIDemo{ 
+public class PoliceAPIDemo{
 
     public static void main(String[] args) throws Exception {
-        String jsonString = getJsonString("https://data.police.uk/api/crimes-street-dates");
+        Scanner reader = new Scanner(System.in);
+        //nw, ne, se, sw lat/lon pairs
+        String[] coords = new String[4];
+        String[] compass = {"NW", "NE", "SE", "SW"};
+        String date;
+        
+        while (true) {
+            for (int i = 0; i < 4; i++) {
+                System.out.printf("%nEnter %s coords (format: 'lat, lon'): ", compass[i]);
+                coords[i] = reader.nextLine();
+            }
+
+            System.out.printf("%nEnter date (format: YYYY-MM): ");
+            date = reader.nextLine();
+
+            String url = String.format("https://data.police.uk/api/crimes-street/all-crime?date=%s&poly=%s:%s:%s:%s", date, coords[0], coords[1], coords[2], coords[3]);
+            System.out.println(url);
+            String jsonString = getJsonString(url);
+            outputStringToJson(jsonString, "test.json");
+        }
+    }
+
+    public static void dumpToFile(String jsonString, String filename) {
+        try {
+            PrintWriter writer = new PrintWriter(filename);
+            writer.println(jsonString);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void outputStringToJson(String jsonString, String outputFile) throws Exception{
