@@ -14,7 +14,7 @@ public class BatComputer extends JFrame {
         title.setPreferredSize(new Dimension(900, 50)); 
         this.add(title, BorderLayout.NORTH);
 
-        MapPanel map = new MapPanel();
+        Map map = new Map();
         this.add(map, BorderLayout.CENTER);
 
         OptionsPanel optionsPanel = new OptionsPanel();
