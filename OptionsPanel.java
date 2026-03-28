@@ -18,7 +18,7 @@ public class OptionsPanel extends JPanel {
         buttonPanel.add(createReportButton(map));
         buttonPanel.add(createViewRecentCrimesButton(map));
         buttonPanel.add(createRequestAssistanceButton(map));
-        buttonPanel.add(createClearRoutesButton());
+        buttonPanel.add(createClearRoutesButton(map));
         
         add(buttonPanel);
         add(reportCrimePanel);
@@ -91,7 +91,7 @@ public class OptionsPanel extends JPanel {
         return styleButton(requestAssistanceButton, new Color(60, 60, 60), new Color(220, 200, 50));
     }
 
-    private JButton createClearRoutesButton() {
+    private JButton createClearRoutesButton(Map map) {
         JButton clearRoutesButton = new JButton("Clear Routes");
         clearRoutesButton.addActionListener(e -> {
             revalidate();
