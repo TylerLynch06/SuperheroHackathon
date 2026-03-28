@@ -11,8 +11,8 @@ import java.util.Set;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
-public class BasicMap {
-    public static void main(String[] args) {
+public class Map {
+    Map() {
         JFrame frame = new JFrame("Map");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
