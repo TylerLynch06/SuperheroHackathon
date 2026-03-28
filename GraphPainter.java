@@ -19,7 +19,7 @@ public class GraphPainter {
     HashSet<Waypoint> crimeWaypoints = new HashSet<Waypoint>();
     HashSet<Waypoint> reportedWayPoints = new HashSet<Waypoint>();
 
-    boolean doPlotCrime = true;
+    boolean doPlotCrime = false;
     boolean doPlotRoute = true;
 
     public GraphPainter(JXMapViewer mapViewer) {
