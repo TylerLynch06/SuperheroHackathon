@@ -17,6 +17,7 @@ public class OptionsPanel extends JPanel {
         buttonPanel.setBackground(new Color(45, 45, 45));
         buttonPanel.add(createReportButton());
         buttonPanel.add(createViewRecentCrimesButton());
+        buttonPanel.add(createCrimeToggleButton());
         buttonPanel.add(createRequestAssistanceButton());
         add(buttonPanel);
 
@@ -56,6 +57,14 @@ public class OptionsPanel extends JPanel {
             repaint();
         });
         return styleButton(reportButton, new Color(60, 60, 60), new Color(220, 50, 50));
+    }
+
+    private JButton createCrimeToggleButton() {
+        JButton toggle = new JButton("Toggle Crime");
+        toggle.addActionListener(e -> {
+
+        });
+        return styleButton(toggle, new Color(60, 60, 60), new Color(220, 50, 50));
     }
 
     private JButton createViewRecentCrimesButton() {

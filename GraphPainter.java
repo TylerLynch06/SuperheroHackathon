@@ -133,11 +133,14 @@ public class GraphPainter {
         }
     }
 
-    public void setDoPlotCrime(boolean value) {
-        doPlotCrime = value;
+    public void toggleDoPlotCrime() {
+        doPlotCrime = !doPlotCrime;
+        paintWaypoints();
+        System.out.println("Value: "+doPlotCrime);
     }
 
-    public void setDoPlotRoute(boolean value) {
-        doPlotRoute = value;
+    public void toggleDoPlotRoute() {
+        doPlotRoute = !doPlotRoute;
+        paintWaypoints();
     }
 }

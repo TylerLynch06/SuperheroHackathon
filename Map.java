@@ -66,12 +66,12 @@ public class Map extends JPanel {
         graphPainter.paintWaypoints();
     }
 
-    public void doPlotCrime(boolean value) {
-        graphPainter.setDoPlotCrime(value);
+    public void toggleCrimePlot() {
+        graphPainter.toggleDoPlotCrime();
     }
 
-    public void doPlotRoute(boolean value) {
-        graphPainter.setDoPlotRoute(value);
+    public void toggleRoutePlot() {
+        graphPainter.toggleDoPlotRoute();
     }
 
 }
