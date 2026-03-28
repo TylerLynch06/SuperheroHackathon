@@ -117,4 +117,8 @@ public class Map extends JPanel {
             break;
         }
     }
+
+    public void clearWaypoints() {
+        graphPainter.resetWaypoints();
+    }
 }
