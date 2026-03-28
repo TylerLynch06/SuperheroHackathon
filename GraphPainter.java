@@ -104,13 +104,13 @@ public class GraphPainter {
                     
                     // Draw crime points (blue) and new reported crimes (yellow)
                     if ("crime".equals(customWaypoint.getType())) {
-                        g.setColor(Color.BLUE);
+                        g.setColor(new Color(105,179,231));
                         g.fillOval(x - 10, y - 10, 10, 10); // Blue for original crimes (larger)
                     } else if ("reported".equals(customWaypoint.getType())) {
-                        g.setColor(Color.YELLOW);
-                        g.fillOval(x - 8, y - 8, 8, 8); // Yellow for reported crimes (slightly smaller)
+                         g.setColor(Color.BLACK);
+                        g.fillOval(x - 8, y - 8, 15, 15); // Yellow for reported crimes (slightly smaller)
                     } else if ("route".equals(customWaypoint.getType())) {
-                        g.setColor(Color.RED);
+                        g.setColor(new Color 	(218,41,28));
                         g.fillOval(x - 5, y - 5, 5, 5); // Red for route points (smaller)
                     }
                 }
