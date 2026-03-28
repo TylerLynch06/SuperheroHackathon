@@ -8,8 +8,10 @@ import org.jxmapviewer.input.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+
 public class BasicMap {
-   
     public static void main(String[] args) {
         JFrame frame = new JFrame("Map");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,6 +49,10 @@ public class BasicMap {
         // Add marker
             
         Set<Waypoint> waypoints = new HashSet<>();
+
+        // Get crime point
+
+        // Gets route
         Router router = new Router();
         Route route = router.createRoute(-0.1278, 51.5074, -0.081829, 51.530811);
         for(double[] array : route.getCoordinates()) {
@@ -65,10 +71,26 @@ public class BasicMap {
     }
 
     public static void waypointPainter(Set<Waypoint> waypoints, double lat, double longitude) {
-        
-
         Waypoint currentPoint = new DefaultWaypoint(lat, -longitude);
         waypoints.add(currentPoint);
-       
+    }
+
+    public static void paintMarker(JXMapViewer map) {
+        WaypointPainter<Waypoint> painter = new WaypointPainter<>() {
+            @Override
+            protected void doPaint(Graphics2D g, JXMapViewer map, int w, int h) {
+                g.setColor(Color.RED);
+
+                for (Waypoint wp : getWaypoints()) {
+                    Point2D pt = map.getTileFactory().geoToPixel(wp.getPosition(), map.getZoom());
+                    Point2D mapCenter = map.getCenter();
+
+                    int x = (int) (pt.getX() - mapCenter.getX() + w / 2);
+                    int y = (int) (pt.getY() - mapCenter.getY() + h / 2);
+
+                    g.fillOval(x -5, y - 5, 10, 10);
+                }
+            }
+        };
     }
 }
