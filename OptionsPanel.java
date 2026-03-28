@@ -15,10 +15,10 @@ public class OptionsPanel extends JPanel {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         buttonPanel.setBackground(new Color(45, 45, 45));
-        buttonPanel.add(createReportButton());
+        buttonPanel.add(createReportButton(map));
         buttonPanel.add(createViewRecentCrimesButton(map));
         buttonPanel.add(createRequestAssistanceButton());
-        buttonPanel.add(createClearRoutesButton());
+        buttonPanel.add(createClearRoutesButton(map));
         add(buttonPanel);
 
         add(reportCrimePanel);
@@ -47,7 +47,7 @@ public class OptionsPanel extends JPanel {
         return button;
     }
 
-    private JButton createReportButton() {
+    private JButton createReportButton(Map map) {
         JButton reportButton = new JButton("Report Crime");
         reportButton.addActionListener(e -> {
             boolean nowVisible = !reportCrimePanel.isVisible();
@@ -89,7 +89,7 @@ public class OptionsPanel extends JPanel {
         return styleButton(requestAssistanceButton, new Color(60, 60, 60), new Color(220, 200, 50));
     }
 
-    private JButton createClearRoutesButton() {
+    private JButton createClearRoutesButton(Map map) {
         JButton clearRoutesButton = new JButton("Clear Routes");
         clearRoutesButton.addActionListener(e -> {
             revalidate();
