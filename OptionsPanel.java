@@ -1,53 +1,61 @@
-// OptionsPanel.java
 import javax.swing.*;
 import java.awt.*;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.Set;
 
 public class OptionsPanel extends JPanel {
 
-    private JTextField locationField = new JTextField(15);
-    private JTextField descriptionField = new JTextField(15);
-    private JLabel locationLabel = new JLabel("Location (PostCode):");
-    private JLabel descriptionLabel = new JLabel("Crime Type:");
-    private JButton submitButton = new JButton("Submit");
-    private JPanel inputPanel = new JPanel(new FlowLayout());
+    private ReportCrimePanel reportCrimePanel;
+    private RequestAssistancePanel requestAssistancePanel;
 
-    private Map map;
-    
     public OptionsPanel(Map map) {
-        this.map = map;
-        setLayout(new FlowLayout());
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        JPanel buttonPanel = new JPanel(new FlowLayout());
+        reportCrimePanel = new ReportCrimePanel(map);
+        requestAssistancePanel = new RequestAssistancePanel();
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        buttonPanel.setBackground(new Color(45, 45, 45));
         buttonPanel.add(createReportButton());
         buttonPanel.add(createViewRecentCrimesButton());
         buttonPanel.add(createRequestAssistanceButton());
         add(buttonPanel);
 
-        inputPanel = new JPanel(new FlowLayout());
-        inputPanel.add(locationLabel);
-        inputPanel.add(locationField);
-        inputPanel.add(descriptionLabel);
-        inputPanel.add(descriptionField);
-        inputPanel.add(submitButton);
-        inputPanel.setVisible(false);
-        add(inputPanel);
+        add(reportCrimePanel);
+        add(requestAssistancePanel);
+    }
 
-        setupSubmitButton();
+    private JButton styleButton(JButton button, Color bgColor, Color textColor) {
+        button.setFont(new Font("Arial", Font.BOLD, 13));
+        button.setForeground(textColor);
+        button.setBackground(bgColor);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setPreferredSize(new Dimension(180, 40));
+
+        Color hoverColor = bgColor.darker();
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                button.setBackground(hoverColor);
+            }
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
     }
 
     private JButton createReportButton() {
         JButton reportButton = new JButton("Report Crime");
         reportButton.addActionListener(e -> {
-            inputPanel.setVisible(!inputPanel.isVisible());
+            boolean nowVisible = !reportCrimePanel.isVisible();
+            reportCrimePanel.setVisible(nowVisible);
+            if (nowVisible) requestAssistancePanel.setVisible(false);
             revalidate();
             repaint();
         });
-        return reportButton;
+        return styleButton(reportButton, new Color(60, 60, 60), new Color(220, 50, 50));
     }
 
     private JButton createViewRecentCrimesButton() {
@@ -60,66 +68,22 @@ public class OptionsPanel extends JPanel {
                 "51.509443,-0.103340"
             };
             CrimeAPI crimeAPI = new CrimeAPI(coords);
-
             Set<Crime> recentCrimes = crimeAPI.getCrimesByDate("2026-01");
         });
-        return viewRecentCrimesButton;
+        JButton styled = styleButton(viewRecentCrimesButton, new Color(60, 60, 60), new Color(50, 150, 220));
+        styled.setFont(new Font("Arial", Font.BOLD, 10)); // smaller font
+        return styled;
     }
 
     private JButton createRequestAssistanceButton() {
         JButton requestAssistanceButton = new JButton("Request Assistance");
         requestAssistanceButton.addActionListener(e -> {
-            // send request signal to other users
+            boolean nowVisible = !requestAssistancePanel.isVisible();
+            requestAssistancePanel.setVisible(nowVisible);
+            if (nowVisible) reportCrimePanel.setVisible(false);
+            revalidate();
+            repaint();
         });
-        return requestAssistanceButton;
-    }
-
-    private void setupSubmitButton() {
-        submitButton.addActionListener(e -> {
-            String location = locationField.getText();
-            String crimeType = descriptionField.getText();
-            try {
-                double[] coords = getCoordinates(location);
-                double lat = coords[0];
-                double lon = coords[1];
-                Crime reportedCrime = new Crime(lat, lon, crimeType);
-                System.out.println("Latitude: " + lat);
-                System.out.println("Longitude: " + lon);
-
-                // Pass the crime object to the map
-                map.addReportedCrime(reportedCrime); // Update the map with the new crime
-
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this,
-                    "Could not find coordinates for that postcode.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        });
-    }
-
-    private double[] getCoordinates(String postcode) throws Exception {
-        String url = "https://nominatim.openstreetmap.org/search?q="
-                + postcode.replace(" ", "+")
-                + "&format=json";
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("User-Agent", "YourAppName")
-                .GET()
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        String body = response.body();
-
-        if (body.equals("[]")) {
-            throw new Exception("No results found for postcode: " + postcode);
-        }
-
-        double lat = Double.parseDouble(body.split("\"lat\":\"")[1].split("\"")[0]);
-        double lon = Double.parseDouble(body.split("\"lon\":\"")[1].split("\"")[0]);
-
-        return new double[]{lat, lon};
+        return styleButton(requestAssistanceButton, new Color(60, 60, 60), new Color(220, 200, 50));
     }
 }
