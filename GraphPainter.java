@@ -5,8 +5,7 @@ import org.jxmapviewer.painter.*;
 import javax.swing.*;
 import java.util.*;
 import org.jxmapviewer.input.*;
-import java.util.HashSet;
-import java.util.Set;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
 
@@ -70,7 +69,7 @@ public class GraphPainter {
         Set<Crime> crimes = crimeFinder.getCrimesByDate("2026-01");
 
         for (Crime c : crimes) {
-            waypointPainter(crimeWaypoints, c.getLatitude(), c.getLongitude(), "crime");
+            waypointPainter(crimeWaypoints, c.getLatitude(), c.getLongitude(), "crime", c);
         }
     }
 
@@ -93,13 +92,13 @@ public class GraphPainter {
                     
                     // Draw crime points (blue) and new reported crimes (yellow)
                     if ("crime".equals(customWaypoint.getType())) {
-                        g.setColor(Color.BLUE);
+                        g.setColor(new Color(105,179,231));
                         g.fillOval(x - 10, y - 10, 10, 10); // Blue for original crimes (larger)
                     } else if ("reported".equals(customWaypoint.getType())) {
-                        g.setColor(Color.YELLOW);
-                        g.fillOval(x - 8, y - 8, 8, 8); // Yellow for reported crimes (slightly smaller)
+                         g.setColor(new Color(54, 69, 79));
+                        g.fillOval(x - 8, y - 8, 15, 15); // Yellow for reported crimes (slightly smaller)
                     } else if ("route".equals(customWaypoint.getType())) {
-                        g.setColor(Color.RED);
+                        g.setColor(new Color (218,41,28));
                         g.fillOval(x - 5, y - 5, 5, 5); // Red for route points (smaller)
                     }
                 }
@@ -109,28 +108,38 @@ public class GraphPainter {
     }
 
     // Utility method to add waypoints
-    public void waypointPainter(Set<Waypoint> wayPointSet, double lat, double longitude, String type) {
-        Waypoint currentPoint = new CustomWaypoint(lat, longitude, type);
-        wayPointSet.add(currentPoint);
+    public void waypointPainter(Set<Waypoint> wayPointSet, double lat, double lon, String type, Crime crime) {
+        wayPointSet.add(new CustomWaypoint(lat, lon, type, crime));
+    }
+
+    // Overload for non-crime points (route) — no Crime object needed
+    public void waypointPainter(Set<Waypoint> wayPointSet, double lat, double lon, String type) {
+        waypointPainter(wayPointSet, lat, lon, type, null);
     }
 
     //Adds the crime to the way point set
     public void reportCrime(Crime crime) {
-        waypointPainter(reportedWayPoints, crime.getLatitude(), crime.getLongitude(), "reported");
+        waypointPainter(reportedWayPoints, crime.getLatitude(), crime.getLongitude(), "reported", crime);
     }
 
     // Custom Waypoint class that holds the type (crime, reported, route)
     static class CustomWaypoint extends DefaultWaypoint {
         private String type;
+        private Crime crime; // nullable — route points won't have one
 
-        public CustomWaypoint(double lat, double lon, String type) {
+        public CustomWaypoint(double lat, double lon, String type, Crime crime) {
             super(lat, lon);
             this.type = type;
+            this.crime = crime;
         }
 
-        public String getType() {
-            return type;
+        // Convenience constructor for non-crime waypoints (route, etc.)
+        public CustomWaypoint(double lat, double lon, String type) {
+            this(lat, lon, type, null);
         }
+
+        public String getType() { return type; }
+        public Crime getCrime() { return crime; } // null if not a crime point
     }
 
     public void toggleDoPlotCrime() {
@@ -143,4 +152,17 @@ public class GraphPainter {
         doPlotRoute = !doPlotRoute;
         paintWaypoints();
     }
+
+    public Set<Crime> getAllCrimes() {
+        Set<Crime> result = new HashSet<>();
+        for (Waypoint wp : crimeWaypoints) {
+            Crime c = ((CustomWaypoint) wp).getCrime();
+            if (c != null) result.add(c);
+        }
+        for (Waypoint wp : reportedWayPoints) {
+            Crime c = ((CustomWaypoint) wp).getCrime();
+            if (c != null) result.add(c);
+        }
+        return Collections.unmodifiableSet(result);
+    }   
 }
