@@ -21,7 +21,13 @@ public class OptionsPanel extends JPanel {
     private JButton assistBtn;
     private JLabel hintLabel;
 
+    private CrimeReportHandler reportHandler;
+    private AssistanceRequestHandler requestHandler;
+
     public OptionsPanel(Map map) {
+
+        reportHandler = new CrimeReportHandler();
+        requestHandler = new AssistanceRequestHandler();
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(BG_PANEL);
@@ -83,8 +89,8 @@ public class OptionsPanel extends JPanel {
         clearBtn.addActionListener(e -> map.clearRoutes());
 
         buttonPanel.add(reportBtn);
-        buttonPanel.add(viewBtn);
         buttonPanel.add(assistBtn);
+        buttonPanel.add(viewBtn);
         buttonPanel.add(clearBtn);
         buttonPanel.add(refreshBtn);
         buttonPanel.add(helpOthersBtn);

@@ -7,7 +7,8 @@ public class BatComputer extends JFrame {
 
         setUndecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(960, 720);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setVisible(true);
         setLayout(new BorderLayout());
         setBackground(new Color(18, 18, 22));
 

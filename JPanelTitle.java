@@ -20,38 +20,11 @@ public class JPanelTitle extends JPanel {
 
         JPanel rightButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         rightButtons.setBackground(new Color(28, 28, 32));
-        rightButtons.add(createFullscreenButton(frame));
         rightButtons.add(createExitButton());
 
         add(new JLabel(bcImage), BorderLayout.WEST);
         //add(titleLabel, BorderLayout.WEST);
         add(rightButtons, BorderLayout.EAST);
-    }
-
-    private JButton createFullscreenButton(JFrame frame) {
-        JButton btn = new JButton("□");
-        styleWindowButton(btn);
-        btn.addActionListener(e -> {
-            GraphicsDevice gd = GraphicsEnvironment
-                    .getLocalGraphicsEnvironment()
-                    .getDefaultScreenDevice();
-            if (gd.getFullScreenWindow() == null) {
-                gd.setFullScreenWindow(frame);
-            } else {
-                gd.setFullScreenWindow(null);
-            }
-        });
-        btn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                btn.setBackground(new Color(50, 50, 62));
-                btn.setForeground(new Color(220, 220, 228));
-            }
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                btn.setBackground(new Color(28, 28, 32));
-                btn.setForeground(new Color(140, 140, 150));
-            }
-        });
-        return btn;
     }
 
     private JButton createExitButton() {
