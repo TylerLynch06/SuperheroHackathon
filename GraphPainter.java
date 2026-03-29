@@ -126,7 +126,7 @@ public class GraphPainter {
                         g.fillOval(x - 5, y - 5, 5, 5);
                     } // Red for route points (smaller)
                     else if ("assist".equals(customWaypoint.getType())) {
-                        g.setColor(new Color (0,0,0));
+                        g.setColor(new Color (252, 169, 3));
                         g.fillOval(x - 5, y - 5, 15, 15);
                     }
                     else {

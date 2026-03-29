@@ -16,6 +16,7 @@ public class OptionsPanel extends JPanel {
     static final Color ACCENT_RED = new Color(196, 43, 43);
     static final Color ACCENT_BLUE = new Color(48, 120, 214);
     static final Color ACCENT_AMBER = new Color(190, 150, 30);
+    static final Color ACCENT_GREEN = new Color(20, 125, 36);
 
     private JButton reportBtn;
     private JButton assistBtn;
@@ -37,12 +38,13 @@ public class OptionsPanel extends JPanel {
         buttonPanel.setBackground(BG_TOOLBAR);
 
         reportBtn = makeButton("Report Crime", ACCENT_RED);
-        assistBtn = makeButton("Request Assistance", ACCENT_AMBER);
-        JButton viewBtn = makeButton("View Recent Crimes", ACCENT_BLUE);
+        assistBtn = makeButton("Call for Help", ACCENT_AMBER);
+        JButton viewBtn = makeButton("View Historic Crimes", ACCENT_BLUE);
         JButton clearBtn = makeButton("Clear Routes", TEXT_MUTED);
         //CHANGE COLOUR
-        JButton refreshBtn = makeButton("Refresh", TEXT_MUTED);
-        JButton helpOthersBtn = makeButton("Assist", ACCENT_AMBER);
+        JButton refreshBtn = makeButton("Refresh", ACCENT_GREEN);
+        JButton helpOthersBtn = makeButton("Assist Someone", ACCENT_AMBER);
+
 
         reportBtn.addActionListener(e -> {
             map.enableMapClicking(true);
@@ -68,6 +70,7 @@ public class OptionsPanel extends JPanel {
         
         refreshBtn.addActionListener(e -> {
             map.refresh(reportHandler.getRecentCrimeReports(), requestHandler.getRecentAssistanceRequests());
+            showHint("Showing help calls and crime reports from the last 30 minutes | Press 'REFRESH' to reload");
             // map.enableMapClicking(true);
             // map.toggleFindRoute();
             // setActiveButton(assistBtn, ACCENT_AMBER);
@@ -88,12 +91,12 @@ public class OptionsPanel extends JPanel {
 
         clearBtn.addActionListener(e -> map.clearRoutes());
 
+        buttonPanel.add(refreshBtn);
         buttonPanel.add(reportBtn);
         buttonPanel.add(assistBtn);
-        buttonPanel.add(viewBtn);
-        buttonPanel.add(clearBtn);
-        buttonPanel.add(refreshBtn);
         buttonPanel.add(helpOthersBtn);
+        buttonPanel.add(clearBtn);
+        buttonPanel.add(viewBtn);
 
         // Hint label shown below the buttons while awaiting a map click
         hintLabel = new JLabel(" ");
@@ -112,6 +115,9 @@ public class OptionsPanel extends JPanel {
             resetButton(assistBtn, ACCENT_AMBER);
             hintLabel.setText(" ");
         }));
+
+        //initial refresh
+        map.refresh(reportHandler.getRecentCrimeReports(), requestHandler.getRecentAssistanceRequests());
     }
 
     private void showHint(String text) {
