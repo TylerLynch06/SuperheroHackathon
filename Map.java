@@ -80,17 +80,18 @@ public class Map extends JPanel {
                         RequestAssistanceDialog dialog = new RequestAssistanceDialog(owner, lat, lon, requestHandler);
                         dialog.setVisible(true);
                         if (dialog.isSubmitted()) {
-                            Crime marker = new Crime(lat, lon, "assistance");
+                            Crime marker = new Crime(lat, lon, "assist");
                             graphPainter.reportCrime(marker);
                         }
                     } else if (!doAssist) {
-                        CrimeReportDialog dialog = new CrimeReportDialog(owner, lat, lon);
+                        CrimeReportDialog dialog = new CrimeReportDialog(owner, lat, lon, reportHandler);
                         dialog.setVisible(true);
                         String crimeType = dialog.getCrimeType();
                         if (crimeType != null) {
                             Crime crime = new Crime(lat, lon, crimeType);
                             graphPainter.reportCrime(crime);
                             graphPainter.paintWaypoints();
+                            refresh(reportHandler.getRecentCrimeReports(), requestHandler.getRecentAssistanceRequests());
                         }
                     }
 
@@ -131,15 +132,91 @@ public class Map extends JPanel {
     }
 
     public void showCrimeInfo(Crime crime) {
-        String message = String.format(
-            "Crime at (%.5f, %.5f)\nType: %s\n",
-            crime.getLatitude(),
-            crime.getLongitude(),
-            crime.getType()          // adjust to your actual Crime getters
+        // Match accent colour to crime type
+        Color accent;
+        String type = crime.getType();
+        if ("reported".equals(type) || "assistance".equals(type)) {
+            accent = OptionsPanel.ACCENT_AMBER;
+        } else {
+            accent = OptionsPanel.ACCENT_RED;
+        }
+
+        JDialog dialog = new JDialog(
+            SwingUtilities.getWindowAncestor(this), 
+            "Crime Info", 
+            Dialog.ModalityType.APPLICATION_MODAL
         );
-        JOptionPane.showMessageDialog(this, message, "Waypoint info",
-            JOptionPane.INFORMATION_MESSAGE);
+        dialog.setUndecorated(true);
+        dialog.setBackground(OptionsPanel.BG_PANEL);
+
+        JPanel root = new JPanel(new BorderLayout(0, 0));
+        root.setBackground(OptionsPanel.BG_PANEL);
+        root.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(accent, 1),
+            new EmptyBorder(20, 24, 20, 24)
+        ));
+
+        // Title bar
+        JLabel title = new JLabel("Crime Report");
+        title.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        title.setForeground(accent);
+        title.setBorder(new EmptyBorder(0, 0, 12, 0));
+
+        // Info rows
+        JPanel info = new JPanel();
+        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+        info.setBackground(OptionsPanel.BG_PANEL);
+        info.add(makeInfoRow("Type",      crime.getType()));
+        info.add(makeInfoRow("Latitude",  String.format("%.5f", crime.getLatitude())));
+        info.add(makeInfoRow("Longitude", String.format("%.5f", crime.getLongitude())));
+
+        // Close button — same style as OptionsPanel buttons
+        JButton closeBtn = new JButton("Close");
+        closeBtn.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        closeBtn.setForeground(accent);
+        closeBtn.setBackground(new Color(38, 38, 44));
+        closeBtn.setFocusPainted(false);
+        closeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        closeBtn.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(55, 55, 65), 1),
+            new EmptyBorder(7, 20, 7, 20)
+        ));
+        closeBtn.addActionListener(e -> dialog.dispose());
+
+        JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        btnRow.setBackground(OptionsPanel.BG_PANEL);
+        btnRow.setBorder(new EmptyBorder(16, 0, 0, 0));
+        btnRow.add(closeBtn);
+
+        root.add(title, BorderLayout.NORTH);
+        root.add(info,  BorderLayout.CENTER);
+        root.add(btnRow, BorderLayout.SOUTH);
+
+        dialog.add(root);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }   
+
+// Helper — one label/value row matching the muted panel style
+    private JPanel makeInfoRow(String label, String value) {
+        JPanel row = new JPanel(new BorderLayout(16, 0));
+        row.setBackground(OptionsPanel.BG_PANEL);
+        row.setBorder(new EmptyBorder(4, 0, 4, 0));
+
+        JLabel key = new JLabel(label);
+        key.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        key.setForeground(OptionsPanel.TEXT_MUTED);
+        key.setPreferredSize(new Dimension(70, 20));
+
+        JLabel val = new JLabel(value);
+        val.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        val.setForeground(Color.WHITE);
+
+        row.add(key, BorderLayout.WEST);
+        row.add(val, BorderLayout.CENTER);
+    return row;
+    }
 
     /** Register a callback that fires once the user has picked a point (or cancelled). */
     public void setOnMapClickComplete(Runnable callback) {

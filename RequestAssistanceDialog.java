@@ -92,7 +92,6 @@ public class RequestAssistanceDialog extends JDialog {
                 lon,
                 lat,
                 text
-                text
             );
 
             requestHandler.requestAssistance(aRequest);
