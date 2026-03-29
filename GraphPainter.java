@@ -42,6 +42,7 @@ public class GraphPainter {
             allWaypoints.addAll(routeWaypoints);
         }
         allWaypoints.addAll(reportedWayPoints);
+        allWaypoints.addAll(assistanceRequests);
         // for (Waypoint wp : reportedWayPoints) {
         //     System.out.println(wp.getPosition());
         // }
@@ -125,6 +126,9 @@ public class GraphPainter {
                     } else if ("route".equals(customWaypoint.getType())) {
                         g.setColor(new Color (218,41,28));
                         g.fillOval(x - 5, y - 5, 5, 5); // Red for route points (smaller)
+                    } else if ("assist".equals(customWaypoint.getType())) {
+                        g.setColor(new Color (255,255,0));
+                        g.fillOval(x - 5, y - 5, 5, 5);
                     }
                 }
             }
@@ -177,16 +181,26 @@ public class GraphPainter {
         for (CrimeReport cr : crimeReports) {
             //System.out.println(cr.getLatitude()+" "+cr.getLongitude()+" "+cr.getType());
             Crime crime = new Crime(cr.getLatitude(), cr.getLongitude(), cr.getType()+"\nHappened:"+DateTimeTools.dateToString(cr.getTimestamp()));        
-            waypointPainter(reportedWayPoints, cr.getLongitude(), cr.getLatitude(), "crime", crime);//, DateTimeTools.dateToString(cr.getTimestamp()));
+            waypointPainter(reportedWayPoints, cr.getLongitude(), cr.getLatitude(), "reported", crime);//, DateTimeTools.dateToString(cr.getTimestamp()));
         }
     }
 
-    public void addAssistanceRequestSet(Set<AssistanceRequest> assistanceRequests) {
-        for (AssistanceRequest ar : assistanceRequests) {
+    public void addAssistanceRequestSet(Set<AssistanceRequest> ars) {
+        for (AssistanceRequest ar : ars) {
             Crime data = new Crime(ar.getLatitude(), ar.getLongitude(), ar.getDescription()+"\nHappened:"+DateTimeTools.dateToString(ar.getTimestamp()));
-            waypointPainter(reportedWayPoints, ar.getLongitude(), ar.getLatitude(), "reported", data);//, DateTimeTools.dateToString(cr.getTimestamp()));
+            waypointPainter(assistanceRequests, ar.getLongitude(), ar.getLatitude(), "assist", data);//, DateTimeTools.dateToString(cr.getTimestamp()));
         }
     }
+
+    // public void routeToAllAssistanceRequests(double startLat, double startLon) {
+    //     System.out.println("Process "+assistanceRequests.size());
+
+    //     for (Waypoint ar : assistanceRequests) {
+    //         System.out.println("Routing to assistance request");
+    //         setRouteWaypoints(startLat, startLon, ar.getPosition().getLongitude(), ar.getPosition().getLatitude());
+    //     }
+    //     paintWaypoints();
+    // }
 
     public void clearRoutes() {
         routeWaypoints.clear();

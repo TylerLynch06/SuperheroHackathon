@@ -90,13 +90,13 @@ public class RequestAssistanceDialog extends JDialog {
 
             AssistanceRequestHandler requestHandler = new AssistanceRequestHandler();
 
-            CrimeReport incident = new CrimeReport(
+            AssistanceRequest incident = new AssistanceRequest(
                 lon,
                 lat,
-                text,
+                text
             );
 
-            reportHandler.reportCrime(incident);
+            requestHandler.requestAssistance(incident);
 
             submitted = true;
             dispose();

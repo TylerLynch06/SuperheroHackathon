@@ -15,7 +15,10 @@ public class Map extends JPanel {
     private GraphPainter graphPainter;
 
     private boolean doPlaceMarker = false; // Flag to check if the user can click on the map
-    private boolean doFindRoute = false;    
+    private boolean doFindRoute = false;   
+    public boolean doAssist = false; 
+
+    public AssistanceRequest workingAssistanceRequest;
 
     private static final int HIT_RADIUS_PX = 10;
 
@@ -70,11 +73,8 @@ public class Map extends JPanel {
                         if (dialog.isSubmitted()) {
                             Crime marker = new Crime(lat, lon, "assistance");
                             graphPainter.reportCrime(marker);
-                            graphPainter.paintWaypoints();
-                            routeToCrime(lat, lon);
-                            graphPainter.paintWaypoints();
                         }
-                    } else {
+                    } else if (!doAssist) {
                         CrimeReportDialog dialog = new CrimeReportDialog(owner, lat, lon);
                         dialog.setVisible(true);
                         String crimeType = dialog.getCrimeType();
@@ -85,8 +85,18 @@ public class Map extends JPanel {
                         }
                     }
 
+                    if (doAssist) {
+                        graphPainter.setRouteWaypoints(lat, lon, workingAssistanceRequest.getLongitude(), workingAssistanceRequest.getLatitude());
+                        graphPainter.paintWaypoints();
+                        //graphPainter.routeToAllAssistanceRequests(lat, lon);
+                        System.out.println(lat+" "+lon+" "+" "+workingAssistanceRequest.getLatitude()+" "+" "+workingAssistanceRequest.getLongitude());
+                    }
+
                     doPlaceMarker = false;
                     doFindRoute   = false;
+                    doAssist = false;
+                    workingAssistanceRequest = null;
+
                     if (onMapClickComplete != null) onMapClickComplete.run();
                 }
             }

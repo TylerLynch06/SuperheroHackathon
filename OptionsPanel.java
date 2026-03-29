@@ -2,6 +2,10 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Comparator;
 
 public class OptionsPanel extends JPanel {
 
@@ -38,6 +42,7 @@ public class OptionsPanel extends JPanel {
         JButton clearBtn = makeButton("Clear Routes", TEXT_MUTED);
         //CHANGE COLOUR
         JButton refreshBtn = makeButton("Refresh", TEXT_MUTED);
+        JButton helpOthersBtn = makeButton("Assist", ACCENT_AMBER);
 
         reportBtn.addActionListener(e -> {
             map.enableMapClicking(true);
@@ -69,6 +74,18 @@ public class OptionsPanel extends JPanel {
             // showHint("Click the map where you need assistance");
         });
 
+        helpOthersBtn.addActionListener(e -> {
+            map.enableMapClicking(true);
+            map.doAssist = true;
+            // map.toggleFindRoute();
+            List<AssistanceRequest> sorted = new ArrayList<AssistanceRequest>(requestHandler.getRecentAssistanceRequests());
+            sorted.sort(Comparator.comparing(AssistanceRequest::getTimestamp));
+            AssistanceRequest mostRecentRequest = sorted.get(sorted.size() - 1);
+            map.workingAssistanceRequest = mostRecentRequest;
+            setActiveButton(helpOthersBtn, ACCENT_AMBER);
+            showHint("Click on your location");
+        });
+
         clearBtn.addActionListener(e -> map.clearRoutes());
 
         buttonPanel.add(reportBtn);
@@ -76,6 +93,7 @@ public class OptionsPanel extends JPanel {
         buttonPanel.add(assistBtn);
         buttonPanel.add(clearBtn);
         buttonPanel.add(refreshBtn);
+        buttonPanel.add(helpOthersBtn);
 
         // Hint label shown below the buttons while awaiting a map click
         hintLabel = new JLabel(" ");

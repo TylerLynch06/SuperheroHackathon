@@ -96,7 +96,7 @@ public class CrimeReportDialog extends JDialog {
             CrimeReport incident = new CrimeReport(
                 lon,
                 lat,
-                text,
+                text
             );
 
             reportHandler.reportCrime(incident);
