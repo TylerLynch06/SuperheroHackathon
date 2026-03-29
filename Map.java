@@ -157,7 +157,7 @@ public class Map extends JPanel {
         ));
 
         // Title bar
-        JLabel title = new JLabel("Crime Report");
+        JLabel title = new JLabel("Recent Police-reported Crime");
         title.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         title.setForeground(accent);
         title.setBorder(new EmptyBorder(0, 0, 12, 0));

@@ -28,7 +28,7 @@ public class RequestAssistanceDialog extends JDialog {
             BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(50, 50, 58)),
             new EmptyBorder(10, 16, 10, 12)
         ));
-        JLabel title = new JLabel("Request Assistance");
+        JLabel title = new JLabel("Call for Help");
         title.setForeground(new Color(220, 220, 228));
         title.setFont(new Font("Segoe UI", Font.BOLD, 14));
         JButton closeBtn = new JButton("✕");
@@ -61,7 +61,7 @@ public class RequestAssistanceDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 0, 10, 0);
 
-        JLabel label = new JLabel("Reason for assistance");
+        JLabel label = new JLabel("What do you need help with?");
         label.setForeground(new Color(140, 140, 155));
         label.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         gbc.gridx = 0; gbc.gridy = 0;
