@@ -85,10 +85,8 @@ public class GraphPainter {
     // Method to add the initial crime points from the API (blue)
     public void setCrimeWaypoints() {
         String[] regionBoundaries = {
-            "51.517651,-0.101350",
-            "51.519324,-0.079203",
-            "51.509857,-0.074201",
-            "51.509443,-0.103340"
+                "51.52591394790356,-0.1302051544189453", "51.525860547398565,-0.04832267761230469",
+                "51.50099581189912,-0.048193931579589844", "51.501022526737486,-0.13016223907470703"
         };
 
         CrimeAPI crimeFinder = new CrimeAPI(regionBoundaries);
@@ -120,15 +118,19 @@ public class GraphPainter {
                     if ("crime".equals(customWaypoint.getType())) {
                         g.setColor(new Color(105,179,231));
                         g.fillOval(x - 10, y - 10, 10, 10); // Blue for original crimes (larger)
-                    } else if ("reported".equals(customWaypoint.getType())) {
-                         g.setColor(new Color(54, 69, 79));
-                        g.fillOval(x - 8, y - 8, 15, 15); // Yellow for reported crimes (slightly smaller)
+                    } else if ("assistance".equals(customWaypoint.getType())) {
+                        g.setColor(new Color (255,134,0));
+                        g.fillOval(x - 8, y - 8, 15, 15); 
                     } else if ("route".equals(customWaypoint.getType())) {
-                        g.setColor(new Color (218,41,28));
+                        g.setColor(new Color (80,92,124));
                         g.fillOval(x - 5, y - 5, 5, 5); // Red for route points (smaller)
                     } else if ("assist".equals(customWaypoint.getType())) {
                         g.setColor(new Color (255,255,0));
                         g.fillOval(x - 5, y - 5, 5, 5);
+                    }
+                    else {
+                        g.setColor(new Color (218,41,28));
+                        g.fillOval(x - 8, y - 8, 15, 15); // Yellow for reported crimes (slightly smaller)
                     }
                 }
             }
@@ -148,7 +150,7 @@ public class GraphPainter {
 
     //Adds the crime to the way point set
     public void reportCrime(Crime crime) {
-        waypointPainter(reportedWayPoints, crime.getLatitude(), crime.getLongitude(), "reported", crime);
+        waypointPainter(reportedWayPoints, crime.getLatitude(), crime.getLongitude(), crime.getType(), crime);
     }
 
     // Custom Waypoint class that holds the type (crime, reported, route)
