@@ -64,7 +64,7 @@ public class Map extends JPanel {
                     Frame owner = (Frame) SwingUtilities.getWindowAncestor(Map.this);
 
                     if (doFindRoute) {
-                        RequestAssistanceDialog dialog = new RequestAssistanceDialog(owner);
+                        RequestAssistanceDialog dialog = new RequestAssistanceDialog(owner, lat, lon);
                         dialog.setVisible(true);
                         if (dialog.isSubmitted()) {
                             Crime marker = new Crime(lat, lon, "assistance");
@@ -74,7 +74,7 @@ public class Map extends JPanel {
                             graphPainter.paintWaypoints();
                         }
                     } else {
-                        CrimeReportDialog dialog = new CrimeReportDialog(owner);
+                        CrimeReportDialog dialog = new CrimeReportDialog(owner, lat, lon);
                         dialog.setVisible(true);
                         String crimeType = dialog.getCrimeType();
                         if (crimeType != null) {

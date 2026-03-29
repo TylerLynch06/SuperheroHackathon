@@ -4,11 +4,15 @@ import java.awt.*;
 
 public class CrimeReportDialog extends JDialog {
 
+    private double lat;
+    private double lon;
     private JTextField crimeTypeField = new JTextField(20);
     private String result = null; // null means cancelled
 
-    public CrimeReportDialog(Frame owner) {
-        super(owner, "Report Crime", true); // modal = true
+    public CrimeReportDialog(Frame owner, double lat, double lon) {
+        super(owner, "Report Crime", true);
+        this.lat = lat;
+        this.lon = lon;
         setUndecorated(true);
         setSize(380, 220);
         setLocationRelativeTo(owner);
@@ -86,6 +90,17 @@ public class CrimeReportDialog extends JDialog {
                 crimeTypeField.setToolTipText("Please enter a crime type");
                 return;
             }
+
+            CrimeReportHandler reportHandler = new CrimeReportHandler();
+
+            CrimeReport incident = new CrimeReport(
+                lon,
+                lat,
+                text,
+            );
+
+            reportHandler.reportCrime(incident);
+
             result = text;
             dispose();
         });

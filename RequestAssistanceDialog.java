@@ -4,11 +4,15 @@ import java.awt.*;
 
 public class RequestAssistanceDialog extends JDialog {
 
+    private double lat;
+    private double lon;
     private JTextField reasonField = new JTextField(20);
     private boolean submitted = false;
 
-    public RequestAssistanceDialog(Frame owner) {
+    public RequestAssistanceDialog(Frame owner, double lat, double lon) {
         super(owner, "Request Assistance", true);
+        this.lat = lat;
+        this.lon = lon;
         setUndecorated(true);
         setSize(380, 220);
         setLocationRelativeTo(owner);
@@ -83,6 +87,17 @@ public class RequestAssistanceDialog extends JDialog {
                 ));
                 return;
             }
+
+            AssistanceRequestHandler requestHandler = new AssistanceRequestHandler();
+
+            CrimeReport incident = new CrimeReport(
+                lon,
+                lat,
+                text,
+            );
+
+            reportHandler.reportCrime(incident);
+
             submitted = true;
             dispose();
         });
