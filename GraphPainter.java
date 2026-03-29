@@ -233,4 +233,8 @@ public class GraphPainter {
         }
         return Collections.unmodifiableSet(result);
     }   
+
+    public boolean getDoPlotCrime() {
+        return doPlotCrime;
+    }
 }

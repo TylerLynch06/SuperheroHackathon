@@ -64,7 +64,7 @@ public class Map extends JPanel {
                 Point2D clickPoint = e.getPoint();
 
                 Crime hitCrime = findWaypointAtPoint(clickPoint);
-                if (hitCrime != null) {
+                if (hitCrime != null  && graphPainter.getDoPlotCrime()) {
                     showCrimeInfo(hitCrime);
                     return;
                 }
