@@ -166,6 +166,8 @@ public class Map extends JPanel {
     public void refresh(Set<CrimeReport> crimeReports, Set<AssistanceRequest> assistanceRequests) {
         graphPainter.addReportedCrimeSet(crimeReports);
         graphPainter.addAssistanceRequestSet(assistanceRequests);
+        System.out.println("Refresh processed");
+        SwingUtilities.invokeLater(() -> graphPainter.paintWaypoints());
     }
 
     public void clearWaypoints() {

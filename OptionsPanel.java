@@ -62,7 +62,7 @@ public class OptionsPanel extends JPanel {
         });
         
         refreshBtn.addActionListener(e -> {
-            reportHandler.getRecentCrimeReports();
+            map.refresh(reportHandler.getRecentCrimeReports(), requestHandler.getRecentAssistanceRequests());
             // map.enableMapClicking(true);
             // map.toggleFindRoute();
             // setActiveButton(assistBtn, ACCENT_AMBER);

@@ -42,7 +42,10 @@ public class GraphPainter {
             allWaypoints.addAll(routeWaypoints);
         }
         allWaypoints.addAll(reportedWayPoints);
-
+        // for (Waypoint wp : reportedWayPoints) {
+        //     System.out.println(wp.getPosition());
+        // }
+        //System.out.println("Printed values");
         painter.setWaypoints(allWaypoints);
         mapViewer.setOverlayPainter(painter);
     }
@@ -112,7 +115,6 @@ public class GraphPainter {
                     Point2D mapCenter = map.getCenter();
                     int x = (int) (pt.getX() - mapCenter.getX() + w / 2);
                     int y = (int) (pt.getY() - mapCenter.getY() + h / 2);
-                    
                     // Draw crime points (blue) and new reported crimes (yellow)
                     if ("crime".equals(customWaypoint.getType())) {
                         g.setColor(new Color(105,179,231));
@@ -152,7 +154,7 @@ public class GraphPainter {
 
         public CustomWaypoint(double lat, double lon, String type, Crime crime, String timeStamp) {
             super(lat, lon);
-            this.type = type+"\nTime: "+timeStamp;
+            this.type = type;
             this.crime = crime;
         }
 
@@ -171,21 +173,18 @@ public class GraphPainter {
         public Crime getCrime() { return crime; } // null if not a crime point
     }
 
-    //TODO: Add time to type
     public void addReportedCrimeSet(Set<CrimeReport> crimeReports) {
         for (CrimeReport cr : crimeReports) {
-            Crime crime = new Crime(cr.getLatitude(), cr.getLongitude(), cr.getType()+"\nHappened:"+DateTimeTools.dateToString(cr.getTimestamp()));
-            
-            waypointPainter(reportedWayPoints, cr.getLatitude(), cr.getLongitude(), "crime", crime);//, DateTimeTools.dateToString(cr.getTimestamp()));
+            //System.out.println(cr.getLatitude()+" "+cr.getLongitude()+" "+cr.getType());
+            Crime crime = new Crime(cr.getLatitude(), cr.getLongitude(), cr.getType()+"\nHappened:"+DateTimeTools.dateToString(cr.getTimestamp()));        
+            waypointPainter(reportedWayPoints, cr.getLongitude(), cr.getLatitude(), "crime", crime);//, DateTimeTools.dateToString(cr.getTimestamp()));
         }
     }
 
-    //TODO: Add time to type
     public void addAssistanceRequestSet(Set<AssistanceRequest> assistanceRequests) {
         for (AssistanceRequest ar : assistanceRequests) {
             Crime data = new Crime(ar.getLatitude(), ar.getLongitude(), ar.getDescription()+"\nHappened:"+DateTimeTools.dateToString(ar.getTimestamp()));
-            
-            waypointPainter(reportedWayPoints, ar.getLatitude(), ar.getLongitude(), "reported", data);//, DateTimeTools.dateToString(cr.getTimestamp()));
+            waypointPainter(reportedWayPoints, ar.getLongitude(), ar.getLatitude(), "reported", data);//, DateTimeTools.dateToString(cr.getTimestamp()));
         }
     }
 
@@ -197,7 +196,7 @@ public class GraphPainter {
     public void toggleDoPlotCrime() {
         doPlotCrime = !doPlotCrime;
         paintWaypoints();
-        System.out.println("Value: "+doPlotCrime);
+        //System.out.println("Value: "+doPlotCrime);
     }
 
     public void toggleDoPlotRoute() {
