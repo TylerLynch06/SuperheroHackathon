@@ -17,7 +17,14 @@ public class OptionsPanel extends JPanel {
     private JButton assistBtn;
     private JLabel hintLabel;
 
+    private CrimeReportHandler reportHandler;
+    private AssistanceRequestHandler requestHandler;
+
     public OptionsPanel(Map map) {
+        //initialise the handlers for crime reports and assistance requests
+        reportHandler = new CrimeReportHandler();
+        requestHandler = new AssistanceRequestHandler();
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(BG_PANEL);
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, BORDER_COLOR));
