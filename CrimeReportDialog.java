@@ -9,7 +9,7 @@ public class CrimeReportDialog extends JDialog {
     private JTextField crimeTypeField = new JTextField(20);
     private String result = null; // null means cancelled
 
-    public CrimeReportDialog(Frame owner, double lat, double lon) {
+    public CrimeReportDialog(Frame owner, double lat, double lon, CrimeReportHandler reportHandler) {
         super(owner, "Report Crime", true);
         this.lat = lat;
         this.lon = lon;
@@ -90,8 +90,6 @@ public class CrimeReportDialog extends JDialog {
                 crimeTypeField.setToolTipText("Please enter a crime type");
                 return;
             }
-
-            CrimeReportHandler reportHandler = new CrimeReportHandler();
 
             CrimeReport incident = new CrimeReport(
                 lon,

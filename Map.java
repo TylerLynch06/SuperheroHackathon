@@ -10,6 +10,9 @@ import java.util.Set;
 
 public class Map extends JPanel {
 
+    private CrimeReportHandler reportHandler;
+    private AssistanceRequestHandler requestHandler;
+
     private JXMapViewer mapViewer;
     private Set<Waypoint> allWaypoints;
     private GraphPainter graphPainter;
@@ -25,6 +28,9 @@ public class Map extends JPanel {
     private Runnable onMapClickComplete; // called after user picks a point (or cancels)
 
     public Map() {
+        reportHandler = new CrimeReportHandler();
+        requestHandler = new AssistanceRequestHandler();
+
         setLayout(new BorderLayout());
         mapViewer = new JXMapViewer();
 
@@ -68,7 +74,7 @@ public class Map extends JPanel {
                     Frame owner = (Frame) SwingUtilities.getWindowAncestor(Map.this);
 
                     if (doFindRoute) {
-                        RequestAssistanceDialog dialog = new RequestAssistanceDialog(owner, lat, lon);
+                        RequestAssistanceDialog dialog = new RequestAssistanceDialog(owner, lat, lon, requestHandler);
                         dialog.setVisible(true);
                         if (dialog.isSubmitted()) {
                             Crime marker = new Crime(lat, lon, "assistance");

@@ -9,7 +9,7 @@ public class RequestAssistanceDialog extends JDialog {
     private JTextField reasonField = new JTextField(20);
     private boolean submitted = false;
 
-    public RequestAssistanceDialog(Frame owner, double lat, double lon) {
+    public RequestAssistanceDialog(Frame owner, double lat, double lon, AssistanceRequestHandler requestHandler) {
         super(owner, "Request Assistance", true);
         this.lat = lat;
         this.lon = lon;
@@ -88,15 +88,14 @@ public class RequestAssistanceDialog extends JDialog {
                 return;
             }
 
-            AssistanceRequestHandler requestHandler = new AssistanceRequestHandler();
-
-            AssistanceRequest incident = new AssistanceRequest(
+            AssistanceRequest aRequest = new AssistanceRequest(
                 lon,
                 lat,
                 text
+                text
             );
 
-            requestHandler.requestAssistance(incident);
+            requestHandler.requestAssistance(aRequest);
 
             submitted = true;
             dispose();
