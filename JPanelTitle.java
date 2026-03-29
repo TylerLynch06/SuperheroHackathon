@@ -10,22 +10,26 @@ public class JPanelTitle extends JPanel {
         setPreferredSize(new Dimension(750, 52));
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(50, 50, 58)));
 
-        JLabel titleLabel = new JLabel("Bat Computer");
-        titleLabel.setForeground(new Color(230, 230, 235));
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        titleLabel.setBorder(new EmptyBorder(0, 18, 0, 0));
+        //testing with image instead of title
+        ImageIcon bcImage = new ImageIcon("BatComputer-Padded-Height30.png");
+
+        //JLabel titleLabel = new JLabel("Bat Computer");
+        //titleLabel.setForeground(new Color(230, 230, 235));
+        //titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        //titleLabel.setBorder(new EmptyBorder(0, 18, 0, 0));
 
         JPanel rightButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         rightButtons.setBackground(new Color(28, 28, 32));
         rightButtons.add(createFullscreenButton(frame));
         rightButtons.add(createExitButton());
 
-        add(titleLabel, BorderLayout.WEST);
+        add(new JLabel(bcImage), BorderLayout.WEST);
+        //add(titleLabel, BorderLayout.WEST);
         add(rightButtons, BorderLayout.EAST);
     }
 
     private JButton createFullscreenButton(JFrame frame) {
-        JButton btn = new JButton("⛶");
+        JButton btn = new JButton("□");
         styleWindowButton(btn);
         btn.addActionListener(e -> {
             GraphicsDevice gd = GraphicsEnvironment
