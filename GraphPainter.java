@@ -17,6 +17,7 @@ public class GraphPainter {
     HashSet<Waypoint> routeWaypoints = new HashSet<Waypoint>();
     HashSet<Waypoint> crimeWaypoints = new HashSet<Waypoint>();
     HashSet<Waypoint> reportedWayPoints = new HashSet<Waypoint>();
+    HashSet<Waypoint> assistanceRequests = new HashSet<Waypoint>();
 
     boolean doPlotCrime = false;
     boolean doPlotRoute = true;
@@ -149,6 +150,12 @@ public class GraphPainter {
         private String type;
         private Crime crime; // nullable — route points won't have one
 
+        public CustomWaypoint(double lat, double lon, String type, Crime crime, String timeStamp) {
+            super(lat, lon);
+            this.type = type+"\nTime: "+timeStamp;
+            this.crime = crime;
+        }
+
         public CustomWaypoint(double lat, double lon, String type, Crime crime) {
             super(lat, lon);
             this.type = type;
@@ -162,6 +169,24 @@ public class GraphPainter {
 
         public String getType() { return type; }
         public Crime getCrime() { return crime; } // null if not a crime point
+    }
+
+    //TODO: Add time to type
+    public void addReportedCrimeSet(Set<CrimeReport> crimeReports) {
+        for (CrimeReport cr : crimeReports) {
+            Crime crime = new Crime(cr.getLatitude(), cr.getLongitude(), cr.getType()+"\nHappened:"+DateTimeTools.dateToString(cr.getTimestamp()));
+            
+            waypointPainter(reportedWayPoints, cr.getLatitude(), cr.getLongitude(), "crime", crime);//, DateTimeTools.dateToString(cr.getTimestamp()));
+        }
+    }
+
+    //TODO: Add time to type
+    public void addAssistanceRequestSet(Set<AssistanceRequest> assistanceRequests) {
+        for (AssistanceRequest ar : assistanceRequests) {
+            Crime data = new Crime(ar.getLatitude(), ar.getLongitude(), ar.getDescription()+"\nHappened:"+DateTimeTools.dateToString(ar.getTimestamp()));
+            
+            waypointPainter(reportedWayPoints, ar.getLatitude(), ar.getLongitude(), "reported", data);//, DateTimeTools.dateToString(cr.getTimestamp()));
+        }
     }
 
     public void clearRoutes() {

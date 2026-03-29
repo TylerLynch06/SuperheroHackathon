@@ -36,6 +36,8 @@ public class OptionsPanel extends JPanel {
         assistBtn = makeButton("Request Assistance", ACCENT_AMBER);
         JButton viewBtn = makeButton("View Recent Crimes", ACCENT_BLUE);
         JButton clearBtn = makeButton("Clear Routes", TEXT_MUTED);
+        //CHANGE COLOUR
+        JButton refreshBtn = makeButton("Refresh", TEXT_MUTED);
 
         reportBtn.addActionListener(e -> {
             map.enableMapClicking(true);
@@ -58,6 +60,14 @@ public class OptionsPanel extends JPanel {
             new CrimeAPI(coords).getCrimesByDate("2026-01");
             map.toggleCrimePlot();
         });
+        
+        refreshBtn.addActionListener(e -> {
+            reportHandler.getRecentCrimeReports();
+            // map.enableMapClicking(true);
+            // map.toggleFindRoute();
+            // setActiveButton(assistBtn, ACCENT_AMBER);
+            // showHint("Click the map where you need assistance");
+        });
 
         clearBtn.addActionListener(e -> map.clearRoutes());
 
@@ -65,6 +75,7 @@ public class OptionsPanel extends JPanel {
         buttonPanel.add(viewBtn);
         buttonPanel.add(assistBtn);
         buttonPanel.add(clearBtn);
+        buttonPanel.add(refreshBtn);
 
         // Hint label shown below the buttons while awaiting a map click
         hintLabel = new JLabel(" ");

@@ -27,12 +27,12 @@ public class ReportRequestTesting {
         
         AssistanceRequestHandler requestHandler = new AssistanceRequestHandler();
         
-        AssistanceRequest incident = new AssistanceRequest(
+        AssistanceRequest incident2 = new AssistanceRequest(
             51.51321,
             -0.097745,
             "i am stuck in john honey computer lab!"
         );
-        requestHandler.requestAssistance(incident);
+        requestHandler.requestAssistance(incident2);
 
         
         

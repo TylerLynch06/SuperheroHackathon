@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.util.Set;
 
 public class Map extends JPanel {
 
@@ -112,7 +113,7 @@ public class Map extends JPanel {
 
     public void showCrimeInfo(Crime crime) {
         String message = String.format(
-            "Crime at (%.5f, %.5f)\nType: %s",
+            "Crime at (%.5f, %.5f)\nType: %s\n",
             crime.getLatitude(),
             crime.getLongitude(),
             crime.getType()          // adjust to your actual Crime getters
@@ -160,6 +161,11 @@ public class Map extends JPanel {
             graphPainter.setRouteWaypoints(startLat, startLong, c.getLatitude(), c.getLongitude());
             break;
         }
+    }
+
+    public void refresh(Set<CrimeReport> crimeReports, Set<AssistanceRequest> assistanceRequests) {
+        graphPainter.addReportedCrimeSet(crimeReports);
+        graphPainter.addAssistanceRequestSet(assistanceRequests);
     }
 
     public void clearWaypoints() {
