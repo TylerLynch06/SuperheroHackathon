@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.awt.image.FilteredImageSource;
 
 public class Map extends JPanel {
 
@@ -61,6 +62,7 @@ public class Map extends JPanel {
                     GeoPosition pos = mapViewer.convertPointToGeoPosition(clickPoint);
                     double lat = pos.getLatitude();
                     double lon = pos.getLongitude();
+                    System.out.println(lat + " " + lon); 
                     Frame owner = (Frame) SwingUtilities.getWindowAncestor(Map.this);
 
                     if (doFindRoute) {
@@ -117,7 +119,7 @@ public class Map extends JPanel {
             crime.getLongitude(),
             crime.getType()          // adjust to your actual Crime getters
         );
-        JOptionPane.showMessageDialog(this, message, "Waypoint info",
+        JOptionPane.showMessageDialog(this, message, "Crime",
             JOptionPane.INFORMATION_MESSAGE);
     }   
 
@@ -149,10 +151,8 @@ public class Map extends JPanel {
 
     public void routeToCrime(double startLat, double startLong) {
         String[] regionBoundaries = {
-            "51.517651,-0.101350",
-            "51.519324,-0.079203",
-            "51.509857,-0.074201",
-            "51.509443,-0.103340"
+                "51.52591394790356,-0.1302051544189453", "51.525860547398565,-0.04832267761230469",
+                "51.50099581189912,-0.048193931579589844", "51.501022526737486,-0.13016223907470703"
         };
         CrimeAPI crimeFinder = new CrimeAPI(regionBoundaries);
         Set<Crime> crimes = crimeFinder.getCrimesByDate("2026-01");

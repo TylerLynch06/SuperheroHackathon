@@ -80,10 +80,8 @@ public class GraphPainter {
     // Method to add the initial crime points from the API (blue)
     public void setCrimeWaypoints() {
         String[] regionBoundaries = {
-            "51.517651,-0.101350",
-            "51.519324,-0.079203",
-            "51.509857,-0.074201",
-            "51.509443,-0.103340"
+                "51.52591394790356,-0.1302051544189453", "51.525860547398565,-0.04832267761230469",
+                "51.50099581189912,-0.048193931579589844", "51.501022526737486,-0.13016223907470703"
         };
 
         CrimeAPI crimeFinder = new CrimeAPI(regionBoundaries);
